@@ -1,0 +1,1513 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;******************** 2019 Andrey Zaostrovnykh *********
+                       ***********
+    2 00000000         ;
+    3 00000000         ;  Инициализация стека
+    4 00000000         ;
+    5 00000000 00000400 
+                       Stack_Size
+                               EQU              0x400       ; Объявляем констан
+                                                            ту Stack_Size равну
+                                                            ю 0x400 
+    6 00000000         
+    7 00000000         ; Создаём секцию в памяти под названием STACK
+    8 00000000         ; NOINIT - данные в секции заполняются нулями
+    9 00000000         ; READWRITE - секция доступна на чтение и запись
+   10 00000000         ; ALIGN=3 - выравнивание секции по границе 8 байт (2^3)
+   11 00000000                 AREA             STACK, NOINIT, READWRITE, ALIGN
+=3
+   12 00000000         
+   13 00000000         ; Выделяем пространство заданного размера для области ст
+                       ека
+   14 00000000         ; Заполняем размер Stack_Size нулями
+   15 00000000         Stack_Mem
+                               SPACE            Stack_Size
+   16 00000400         
+   17 00000400         ; Создаем метку для использования в таблице векторов
+   18 00000400         ; Приравнивается следующему адресу после области стека
+   19 00000400         ; Она будет служить начальным значением указателя стека
+   20 00000400         __initial_sp
+   21 00000400         
+   22 00000400         
+   23 00000400         ;
+   24 00000400         ;  Инициализация кучи
+   25 00000400         ;
+   26 00000400         
+   27 00000400         
+   28 00000400 00000200 
+                       Heap_Size
+                               EQU              0x200       ; Объявляем констан
+                                                            ту Heap_Size равную
+                                                             0x200 
+   29 00000400         
+   30 00000400         ; Создаем секцию в памяти под названием HEAP
+   31 00000400         ; NOINIT - данные в секции заполняются нулями
+   32 00000400         ; READWRITE - секция доступна на чтение и запись
+   33 00000400         ; ALIGN=3 - выравнивание секции по границе 8 байт (2^3) 
+                       
+   34 00000400                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
+3
+   35 00000000         
+   36 00000000         ; Создаем метку для обозначения начала кучи   
+   37 00000000         __heap_base
+   38 00000000         
+   39 00000000         ; Выделяем пространство для кучи обозначенного размера
+   40 00000000         Heap_Mem
+                               SPACE            Heap_Size
+   41 00000200         
+   42 00000200         ; Создаем метку конца кучи
+   43 00000200         __heap_limit
+   44 00000200         
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   45 00000200         ; Директива для обозначения 8-битного выравнивания стека
+                       
+   46 00000200                 PRESERVE8
+   47 00000200         
+   48 00000200         ; Директива для использования набора команд Thumb
+   49 00000200                 THUMB
+   50 00000200         
+   51 00000200         ;  
+   52 00000200         ;  Таблица векторов назначается на адрес 0 при сбросе
+   53 00000200         ;
+   54 00000200         ; Выделяем секцию RESET с таблицей прерываний которая бу
+                       дет 
+   55 00000200         ;  содержать адреса обработчиков и начальное значение ук
+                       азателя стека
+   56 00000200         ; DATA - секция содержит данные, а не инструкции
+   57 00000200         ; READONLY - защищает секцию от перезаписи программой
+   58 00000200         ; Секция размещается перед секцией CODE во Flash памяти 
+                       по адресу 0x08000000
+   59 00000200         ; С неё процессор начинает свою работу
+   60 00000200                 AREA             RESET, DATA, READONLY
+   61 00000000         
+   62 00000000                 EXPORT           __Vectors
+   63 00000000                 EXPORT           __Vectors_End
+   64 00000000                 EXPORT           __Vectors_Size
+   65 00000000         
+   66 00000000         ;
+   67 00000000         ; Объявление таблицы векторов прерываний
+   68 00000000         ; DCD - сохраняет 32-битное слово в памяти
+   69 00000000         ;
+   70 00000000 00000000 
+                       __Vectors
+                               DCD              __initial_sp ; Начальное значен
+                                                            ие указателя стека
+   71 00000004 00000000        DCD              Reset_Handler ; Адрес обработчи
+                                                            ка сброса, отсюда в
+                                                            ыполняется код посл
+                                                            е сброса процессора
+                                                            
+   72 00000008 00000000        DCD              NMI_Handler ; NMI Handler
+   73 0000000C 00000000        DCD              HardFault_Handler ; Hard Fault 
+                                                            Handler
+   74 00000010 00000000        DCD              0           ; Reserved
+   75 00000014 00000000        DCD              0           ; Reserved
+   76 00000018 00000000        DCD              0           ; Reserved
+   77 0000001C 00000000        DCD              0           ; Reserved
+   78 00000020 00000000        DCD              0           ; Reserved
+   79 00000024 00000000        DCD              0           ; Reserved
+   80 00000028 00000000        DCD              0           ; Reserved
+   81 0000002C 00000000        DCD              SVC_Handler ; SVCall Handler
+   82 00000030 00000000        DCD              0           ; Reserved
+   83 00000034 00000000        DCD              0           ; Reserved
+   84 00000038 00000000        DCD              PendSV_Handler ; PendSV Handler
+                                                            
+   85 0000003C 00000000        DCD              SysTick_Handler 
+                                                            ; SysTick Handler
+   86 00000040         
+   87 00000040         ; Прерывания от периферии
+   88 00000040 00000000        DCD              WWDG_IRQHandler 
+                                                            ; Window Watchdog
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   89 00000044 00000000        DCD              PVD_IRQHandler ; PVD through EX
+                                                            TI Line detect
+   90 00000048 00000000        DCD              RTC_IRQHandler ; RTC through EX
+                                                            TI Line
+   91 0000004C 00000000        DCD              FLASH_IRQHandler ; FLASH
+   92 00000050 00000000        DCD              RCC_IRQHandler ; RCC
+   93 00000054 00000000        DCD              EXTI0_1_IRQHandler 
+                                                            ; EXTI Line 0 and 1
+                                                            
+   94 00000058 00000000        DCD              EXTI2_3_IRQHandler 
+                                                            ; EXTI Line 2 and 3
+                                                            
+   95 0000005C 00000000        DCD              EXTI4_15_IRQHandler 
+                                                            ; EXTI Line 4 to 15
+                                                            
+   96 00000060 00000000        DCD              TSC_IRQHandler ; TS
+   97 00000064 00000000        DCD              DMA1_Channel1_IRQHandler 
+                                                            ; DMA1 Channel 1
+   98 00000068 00000000        DCD              DMA1_Channel2_3_IRQHandler ; DM
+                                                            A1 Channel 2 and Ch
+                                                            annel 3
+   99 0000006C 00000000        DCD              DMA1_Channel4_5_IRQHandler ; DM
+                                                            A1 Channel 4 and Ch
+                                                            annel 5
+  100 00000070 00000000        DCD              ADC1_COMP_IRQHandler ; ADC1, CO
+                                                            MP1 and COMP2 
+  101 00000074 00000000        DCD              TIM1_BRK_UP_TRG_COM_IRQHandler 
+                                                            ; TIM1 Break, Updat
+                                                            e, Trigger and Comm
+                                                            utation
+  102 00000078 00000000        DCD              TIM1_CC_IRQHandler ; TIM1 Captu
+                                                            re Compare
+  103 0000007C 00000000        DCD              TIM2_IRQHandler ; TIM2
+  104 00000080 00000000        DCD              TIM3_IRQHandler ; TIM3
+  105 00000084 00000000        DCD              TIM6_DAC_IRQHandler 
+                                                            ; TIM6 and DAC
+  106 00000088 00000000        DCD              0           ; Reserved
+  107 0000008C 00000000        DCD              TIM14_IRQHandler ; TIM14
+  108 00000090 00000000        DCD              TIM15_IRQHandler ; TIM15
+  109 00000094 00000000        DCD              TIM16_IRQHandler ; TIM16
+  110 00000098 00000000        DCD              TIM17_IRQHandler ; TIM17
+  111 0000009C 00000000        DCD              I2C1_IRQHandler ; I2C1
+  112 000000A0 00000000        DCD              I2C2_IRQHandler ; I2C2
+  113 000000A4 00000000        DCD              SPI1_IRQHandler ; SPI1
+  114 000000A8 00000000        DCD              SPI2_IRQHandler ; SPI2
+  115 000000AC 00000000        DCD              USART1_IRQHandler ; USART1
+  116 000000B0 00000000        DCD              USART2_IRQHandler ; USART2
+  117 000000B4 00000000        DCD              0           ; Reserved
+  118 000000B8 00000000        DCD              CEC_IRQHandler ; CEC
+  119 000000BC         
+  120 000000BC         
+  121 000000BC         ; Метка для обозначения конца таблицы векторов прерывани
+                       й
+  122 000000BC         __Vectors_End
+  123 000000BC         
+  124 000000BC         ; Метка для обозначения размера таблицы векторов прерыва
+                       ний
+  125 000000BC 000000BC 
+                       __Vectors_Size
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+                               EQU              __Vectors_End - __Vectors
+  126 000000BC         
+  127 000000BC         
+  128 000000BC         ; Выделяем секцию памяти где фактически находится код
+  129 000000BC         ; |.text| - имя секции
+  130 000000BC         ; CODE - обозначение того, что в секции находится код пр
+                       ограммы
+  131 000000BC         ; READONLY - защищает секцию от перезаписи программой
+  132 000000BC                 AREA             |.text|, CODE, READONLY
+  133 00000000         
+  134 00000000                 ENTRY
+  135 00000000         
+  136 00000000         ; 
+  137 00000000         ;  Обработчик сброса Reset Handler
+  138 00000000         ;
+  139 00000000         Reset_Handler
+                               PROC                         ; Объявляем начало 
+                                                            функции
+  140 00000000                 EXPORT           Reset_Handler                  
+[WEAK] 
+                                                            ; Делаем доступной 
+                                                            для остальной части
+                                                             программы метку эт
+                                                            ой функции
+  141 00000000         ; WEAK - говорит о том, что она может быть переобъявлена
+                        в другом месте проекта
+  142 00000000         
+  143 00000000         ; Начало пользовательской программы
+  144 00000000 E7FE            B                Init
+  145 00000002                 ENDP
+  146 00000002         
+  147 00000002         
+  148 00000002         ;#######################################################
+                       ################# 
+  149 00000002         ;       Начало программы
+  150 00000002         ;#######################################################
+                       #################
+  151 00000002         ;
+  152 00000002         ; Подгружаем файл с объявлениями периферийных блоков
+  153 00000002         ;
+  154 00000002                 GET              stm32f051r8t6.asm
+    1 00000002         ; Объявление основных шин и базовых адресов 
+    2 00000002 40000000 
+                       PERIPH_BASE
+                               EQU              (0x40000000)
+    3 00000002 40020000 
+                       AHBPERIPH_BASE
+                               EQU              (PERIPH_BASE + 0x00020000)
+    4 00000002 48000000 
+                       AHB2PERIPH_BASE
+                               EQU              (PERIPH_BASE + 0x08000000)
+    5 00000002         
+    6 00000002         ; Регистр тактирования RCC
+    7 00000002 40021000 
+                       RCC_BASE
+                               EQU              (AHBPERIPH_BASE + 0x00001000)
+    8 00000002 40021000 
+                       RCC_CR  EQU              (RCC_BASE + 0x00000000)
+    9 00000002 40021004 
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+                       RCC_CFGR
+                               EQU              (RCC_BASE + 0x00000004)
+   10 00000002 40021008 
+                       RCC_CIR EQU              (RCC_BASE + 0x00000008)
+   11 00000002 4002100C 
+                       RCC_APB2RSTR
+                               EQU              (RCC_BASE + 0x0000000C)
+   12 00000002 40021010 
+                       RCC_APB1RSTR
+                               EQU              (RCC_BASE + 0x00000010)
+   13 00000002 40021014 
+                       RCC_AHBENR
+                               EQU              (RCC_BASE + 0x00000014)
+   14 00000002 40021018 
+                       RCC_APB2ENR
+                               EQU              (RCC_BASE + 0x00000018)
+   15 00000002 4002101C 
+                       RCC_APB1ENR
+                               EQU              (RCC_BASE + 0x0000001C)
+   16 00000002 40021020 
+                       RCC_BDCR
+                               EQU              (RCC_BASE + 0x00000020)
+   17 00000002 40021024 
+                       RCC_CSR EQU              (RCC_BASE + 0x00000024)
+   18 00000002 40021028 
+                       RCC_AHBRSTR
+                               EQU              (RCC_BASE + 0x00000028)
+   19 00000002 4002102C 
+                       RCC_CFGR2
+                               EQU              (RCC_BASE + 0x0000002C)
+   20 00000002 40021030 
+                       RCC_CFGR3
+                               EQU              (RCC_BASE + 0x00000030)
+   21 00000002 40021034 
+                       RCC_CR2 EQU              (RCC_BASE + 0x00000034)
+   22 00000002         
+   23 00000002         ; Регистр GPIOC 
+   24 00000002 48000800 
+                       GPIOC_BASE
+                               EQU              (AHB2PERIPH_BASE + 0x00000800)
+   25 00000002 48000800 
+                       GPIOC_MODER
+                               EQU              (GPIOC_BASE + 0x00000000)
+   26 00000002 48000804 
+                       GPIOC_OTYPER
+                               EQU              (GPIOC_BASE + 0x00000004)
+   27 00000002 48000808 
+                       GPIOC_OSPEEDER
+                               EQU              (GPIOC_BASE + 0x00000008)
+   28 00000002 4800080C 
+                       GPIOC_PUPDR
+                               EQU              (GPIOC_BASE + 0x0000000C)
+   29 00000002 48000810 
+                       GPIOC_IDR
+                               EQU              (GPIOC_BASE + 0x00000010)
+   30 00000002 48000814 
+                       GPIOC_ODR
+                               EQU              (GPIOC_BASE + 0x00000014)
+   31 00000002 48000818 
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+                       GPIOC_BSRR
+                               EQU              (GPIOC_BASE + 0x00000018)
+   32 00000002 4800081C 
+                       GPIOC_LCKR
+                               EQU              (GPIOC_BASE + 0x0000001C)
+   33 00000002 48000820 
+                       GPIOC_AFRL
+                               EQU              (GPIOC_BASE + 0x00000020)
+   34 00000002 48000824 
+                       GPIOC_AFRH
+                               EQU              (GPIOC_BASE + 0x00000024)
+   35 00000002 48000828 
+                       GPIOC_BRR
+                               EQU              (GPIOC_BASE + 0x00000028)
+   36 00000002         
+   37 00000002                 END
+  155 00000002         
+  156 00000002         
+  157 00000002         Init    PROC
+  158 00000002         
+  159 00000002         ; Включаем тактирование на Power Interface 
+  160 00000002 4810            LDR              r0, =(RCC_APB1ENR) ; Записываем
+                                                             в R0 адрес регистр
+                                                            а RCC + значение см
+                                                            ещения параметра AP
+                                                            B1ENR
+  161 00000004 4910            LDR              r1, =(1 << 28) ; Ставим 28 байт
+                                                             в значение 1
+  162 00000006 6001            STR              r1, [r0]    ; Записываем по адр
+                                                            есу [R0] значение и
+                                                            з R1 
+  163 00000008         
+  164 00000008         ; Включаем тактирование на GPIOC в регистре RCC 
+  165 00000008 4810            LDR              r0, =(RCC_AHBENR) ; Записываем 
+                                                            в R0 адрес регистра
+                                                             RCC + смещение 14
+  166 0000000A 4911            LDR              r1, =(0x00080014) ; Записываем 
+                                                            в R1 19-й байт в 1
+  167 0000000C 6001            STR              r1, [r0]    ; Записываем значен
+                                                            ие R0 в регистр с а
+                                                            дресом r1
+  168 0000000E         
+  169 0000000E         ; Включаем пин 9 порта GPIOC как выход
+  170 0000000E 4811            LDR              r0, =(GPIOC_MODER) ; Записываем
+                                                             в R0 адрес регистр
+                                                            а GPIOC + смещение 
+                                                            0
+  171 00000010 4911            LDR              r1, =(1 << (9*2)) ; Каждый пин 
+                                                            имеет два бита пара
+                                                            метров, поэтому умн
+                                                            ожаем на 2 
+  172 00000012 6001            STR              r1, [r0]    ; Записываем по адр
+                                                            есу [R0] значение и
+                                                            з R1    
+  173 00000014         
+  174 00000014 E7FE            B                Loop1
+  175 00000016         
+  176 00000016         ; Конец программы
+  177 00000016                 ENDP
+
+
+
+ARM Macro Assembler    Page 7 
+
+
+  178 00000016         
+  179 00000016         
+  180 00000016         Loop1   PROC
+  181 00000016         
+  182 00000016         ; Записываем высокий уровень в пин PC9
+  183 00000016 4811            LDR              r0, =(GPIOC_ODR)
+  184 00000018 4911            LDR              r1, =(1 << 9)
+  185 0000001A 6001            STR              r1, [r0]    ; Записываем по адр
+                                                            есу [R0] значение и
+                                                            з R1
+  186 0000001C         
+  187 0000001C         
+  188 0000001C 4811            LDR              r0, =(5)
+  189 0000001E E7FE            B                Delay1
+  190 00000020         
+  191 00000020         ; Конец программы
+  192 00000020                 ENDP
+  193 00000020         
+  194 00000020         Loop2   PROC
+  195 00000020         
+  196 00000020         ; Записываем низкий уровень в пин PC9
+  197 00000020 480E            LDR              r0, =(GPIOC_ODR)
+  198 00000022 4911            LDR              r1, =(0)
+  199 00000024 6001            STR              r1, [r0]    ; Записываем по адр
+                                                            есу [R0] значение и
+                                                            з R1 
+  200 00000026         
+  201 00000026 480F            LDR              r0, =(5)
+  202 00000028 E7FE            B                Delay2
+  203 0000002A         
+  204 0000002A         ; Конец программы
+  205 0000002A                 ENDP
+  206 0000002A         
+  207 0000002A         
+  208 0000002A         Delay1  PROC
+  209 0000002A         
+  210 0000002A         ; Вычитаем единицу
+  211 0000002A 1E40            SUBS             R0, R0, #1
+  212 0000002C         
+  213 0000002C         ; Пока не обнулилась, крутим дальше
+  214 0000002C D1FE            BNE              Delay1
+  215 0000002E         
+  216 0000002E E7FE            B                Loop2
+  217 00000030         
+  218 00000030         ; Конец программы
+  219 00000030                 ENDP
+  220 00000030         
+  221 00000030         
+  222 00000030         Delay2  PROC
+  223 00000030         
+  224 00000030         ; Вычитаем единицу
+  225 00000030 1E40            SUBS             R0, R0, #1
+  226 00000032         
+  227 00000032         ; Пока не обнулилась, крутим дальше
+  228 00000032 D1FE            BNE              Delay2
+  229 00000034         
+  230 00000034 E7FE            B                Loop1
+  231 00000036         
+  232 00000036         ; Конец программы
+
+
+
+ARM Macro Assembler    Page 8 
+
+
+  233 00000036                 ENDP
+  234 00000036         
+  235 00000036         ;#######################################################
+                       ################# 
+  236 00000036         ;       Конец программы
+  237 00000036         ;#######################################################
+                       #################
+  238 00000036         
+  239 00000036         ;
+  240 00000036         ; Обработчики исключений с переходами на свой же адрес (
+                       бесконечный цикл)
+  241 00000036         ;
+  242 00000036         NMI_Handler
+                               PROC
+  243 00000036                 EXPORT           NMI_Handler                    
+ [WEAK]
+  244 00000036 E7FE            B                .
+  245 00000038                 ENDP
+  246 00000038         
+  248 00000038         HardFault_Handler
+                               PROC
+  249 00000038                 EXPORT           HardFault_Handler              
+ [WEAK]
+  250 00000038 E7FE            B                .
+  251 0000003A                 ENDP
+  252 0000003A         
+  253 0000003A         SVC_Handler
+                               PROC
+  254 0000003A                 EXPORT           SVC_Handler                    
+[WEAK]
+  255 0000003A E7FE            B                .
+  256 0000003C                 ENDP
+  257 0000003C         
+  258 0000003C         PendSV_Handler
+                               PROC
+  259 0000003C                 EXPORT           PendSV_Handler                 
+ [WEAK]
+  260 0000003C E7FE            B                .
+  261 0000003E                 ENDP
+  262 0000003E         
+  263 0000003E         SysTick_Handler
+                               PROC
+  264 0000003E                 EXPORT           SysTick_Handler                
+ [WEAK]
+  265 0000003E E7FE            B                .
+  266 00000040                 ENDP
+  267 00000040         
+  268 00000040         Default_Handler
+                               PROC
+  269 00000040         
+  270 00000040                 EXPORT           WWDG_IRQHandler                
+ [WEAK]
+  271 00000040                 EXPORT           PVD_IRQHandler                 
+ [WEAK]
+  272 00000040                 EXPORT           RTC_IRQHandler                 
+ [WEAK]
+  273 00000040                 EXPORT           FLASH_IRQHandler               
+ [WEAK]
+  274 00000040                 EXPORT           RCC_IRQHandler                 
+
+
+
+ARM Macro Assembler    Page 9 
+
+
+ [WEAK]
+  275 00000040                 EXPORT           EXTI0_1_IRQHandler             
+ [WEAK]
+  276 00000040                 EXPORT           EXTI2_3_IRQHandler             
+ [WEAK]
+  277 00000040                 EXPORT           EXTI4_15_IRQHandler            
+ [WEAK]
+  278 00000040                 EXPORT           TSC_IRQHandler                 
+ [WEAK]
+  279 00000040                 EXPORT           DMA1_Channel1_IRQHandler       
+ [WEAK]
+  280 00000040                 EXPORT           DMA1_Channel2_3_IRQHandler     
+ [WEAK]
+  281 00000040                 EXPORT           DMA1_Channel4_5_IRQHandler     
+ [WEAK]
+  282 00000040                 EXPORT           ADC1_COMP_IRQHandler           
+ [WEAK]
+  283 00000040                 EXPORT           TIM1_BRK_UP_TRG_COM_IRQHandler 
+ [WEAK]
+  284 00000040                 EXPORT           TIM1_CC_IRQHandler             
+ [WEAK]
+  285 00000040                 EXPORT           TIM2_IRQHandler                
+ [WEAK]
+  286 00000040                 EXPORT           TIM3_IRQHandler                
+ [WEAK]
+  287 00000040                 EXPORT           TIM6_DAC_IRQHandler            
+ [WEAK]
+  288 00000040                 EXPORT           TIM14_IRQHandler               
+ [WEAK]
+  289 00000040                 EXPORT           TIM15_IRQHandler               
+ [WEAK]
+  290 00000040                 EXPORT           TIM16_IRQHandler               
+ [WEAK]
+  291 00000040                 EXPORT           TIM17_IRQHandler               
+ [WEAK]
+  292 00000040                 EXPORT           I2C1_IRQHandler                
+ [WEAK]
+  293 00000040                 EXPORT           I2C2_IRQHandler                
+ [WEAK]
+  294 00000040                 EXPORT           SPI1_IRQHandler                
+ [WEAK]
+  295 00000040                 EXPORT           SPI2_IRQHandler                
+ [WEAK]
+  296 00000040                 EXPORT           USART1_IRQHandler              
+ [WEAK]
+  297 00000040                 EXPORT           USART2_IRQHandler              
+ [WEAK]
+  298 00000040                 EXPORT           CEC_IRQHandler                 
+ [WEAK]
+  299 00000040         
+  300 00000040         
+  301 00000040         WWDG_IRQHandler
+  302 00000040         PVD_IRQHandler
+  303 00000040         RTC_IRQHandler
+  304 00000040         FLASH_IRQHandler
+  305 00000040         RCC_IRQHandler
+  306 00000040         EXTI0_1_IRQHandler
+  307 00000040         EXTI2_3_IRQHandler
+  308 00000040         EXTI4_15_IRQHandler
+
+
+
+ARM Macro Assembler    Page 10 
+
+
+  309 00000040         TSC_IRQHandler
+  310 00000040         DMA1_Channel1_IRQHandler
+  311 00000040         DMA1_Channel2_3_IRQHandler
+  312 00000040         DMA1_Channel4_5_IRQHandler
+  313 00000040         ADC1_COMP_IRQHandler
+  314 00000040         TIM1_BRK_UP_TRG_COM_IRQHandler
+  315 00000040         TIM1_CC_IRQHandler
+  316 00000040         TIM2_IRQHandler
+  317 00000040         TIM3_IRQHandler
+  318 00000040         TIM6_DAC_IRQHandler
+  319 00000040         TIM14_IRQHandler
+  320 00000040         TIM15_IRQHandler
+  321 00000040         TIM16_IRQHandler
+  322 00000040         TIM17_IRQHandler
+  323 00000040         I2C1_IRQHandler
+  324 00000040         I2C2_IRQHandler
+  325 00000040         SPI1_IRQHandler
+  326 00000040         SPI2_IRQHandler
+  327 00000040         USART1_IRQHandler
+  328 00000040         USART2_IRQHandler
+  329 00000040         CEC_IRQHandler
+  330 00000040         
+  331 00000040 E7FE            B                .
+  332 00000042         
+  333 00000042                 ENDP
+  334 00000042         
+  335 00000042 00 00           ALIGN
+  336 00000044         
+  337 00000044         
+  338 00000044         ;*******************************************************
+                       ************************
+  339 00000044         ;  Объявление и инициализация пользовательского стека и 
+                       кучи
+  340 00000044         ;*******************************************************
+                       ************************
+  341 00000044         ;
+  342 00000044         ;                 IF      :DEF:__MICROLIB
+  343 00000044         ;
+  344 00000044         ;     EXPORT  __initial_sp
+  345 00000044         ;     EXPORT  __heap_base
+  346 00000044         ;     EXPORT  __heap_limit
+  347 00000044         ;
+  348 00000044         ;                ELSE
+  349 00000044         ;
+  350 00000044         ;     IMPORT  __use_two_region_memory
+  351 00000044         ;     EXPORT  __user_initial_stackheap
+  352 00000044         ;
+  353 00000044         ;__user_initial_stackheap
+  354 00000044         ;
+  355 00000044         ;     LDR     R0, =  Heap_Mem
+  356 00000044         ;     LDR     R1, =(Stack_Mem + Stack_Size)
+  357 00000044         ;     LDR     R2, = (Heap_Mem +  Heap_Size)
+  358 00000044         ;     LDR     R3, = Stack_Mem
+  359 00000044         ;     BX      LR
+  360 00000044         ;
+  361 00000044         ;     ALIGN
+  362 00000044         ;
+  363 00000044         ;                ENDIF
+  364 00000044         ;
+
+
+
+ARM Macro Assembler    Page 11 
+
+
+  365 00000044                 END
+              4002101C 
+              10000000 
+              40021014 
+              00080014 
+              48000800 
+              00040000 
+              48000814 
+              00000200 
+              00000005 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=interw
+ork --depend=.\objects\main.d -o.\objects\main.o -I.\RTE\_Template -IC:\Keil_v5
+\ARM\PACK\Keil\STM32F0xx_DFP\2.0.0\Drivers\CMSIS\Device\ST\STM32F0xx\Include -I
+C:\Keil_v5\ARM\CMSIS\Include --predefine="__UVISION_VERSION SETA 523" --predefi
+ne="STM32F051x8 SETA 1" --list=.\listings\main.lst User\main.asm
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+STACK 00000000
+
+Symbol: STACK
+   Definitions
+      At line 11 in file User\main.asm
+   Uses
+      None
+Comment: STACK unused
+Stack_Mem 00000000
+
+Symbol: Stack_Mem
+   Definitions
+      At line 15 in file User\main.asm
+   Uses
+      None
+Comment: Stack_Mem unused
+__initial_sp 00000400
+
+Symbol: __initial_sp
+   Definitions
+      At line 20 in file User\main.asm
+   Uses
+      At line 70 in file User\main.asm
+Comment: __initial_sp used once
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+HEAP 00000000
+
+Symbol: HEAP
+   Definitions
+      At line 34 in file User\main.asm
+   Uses
+      None
+Comment: HEAP unused
+Heap_Mem 00000000
+
+Symbol: Heap_Mem
+   Definitions
+      At line 40 in file User\main.asm
+   Uses
+      None
+Comment: Heap_Mem unused
+__heap_base 00000000
+
+Symbol: __heap_base
+   Definitions
+      At line 37 in file User\main.asm
+   Uses
+      None
+Comment: __heap_base unused
+__heap_limit 00000200
+
+Symbol: __heap_limit
+   Definitions
+      At line 43 in file User\main.asm
+   Uses
+      None
+Comment: __heap_limit unused
+4 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+RESET 00000000
+
+Symbol: RESET
+   Definitions
+      At line 60 in file User\main.asm
+   Uses
+      None
+Comment: RESET unused
+__Vectors 00000000
+
+Symbol: __Vectors
+   Definitions
+      At line 70 in file User\main.asm
+   Uses
+      At line 62 in file User\main.asm
+      At line 125 in file User\main.asm
+
+__Vectors_End 000000BC
+
+Symbol: __Vectors_End
+   Definitions
+      At line 122 in file User\main.asm
+   Uses
+      At line 63 in file User\main.asm
+      At line 125 in file User\main.asm
+
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 132 in file User\main.asm
+   Uses
+      None
+Comment: .text unused
+ADC1_COMP_IRQHandler 00000040
+
+Symbol: ADC1_COMP_IRQHandler
+   Definitions
+      At line 313 in file User\main.asm
+   Uses
+      At line 100 in file User\main.asm
+      At line 282 in file User\main.asm
+
+CEC_IRQHandler 00000040
+
+Symbol: CEC_IRQHandler
+   Definitions
+      At line 329 in file User\main.asm
+   Uses
+      At line 118 in file User\main.asm
+      At line 298 in file User\main.asm
+
+DMA1_Channel1_IRQHandler 00000040
+
+Symbol: DMA1_Channel1_IRQHandler
+   Definitions
+      At line 310 in file User\main.asm
+   Uses
+      At line 97 in file User\main.asm
+      At line 279 in file User\main.asm
+
+DMA1_Channel2_3_IRQHandler 00000040
+
+Symbol: DMA1_Channel2_3_IRQHandler
+   Definitions
+      At line 311 in file User\main.asm
+   Uses
+      At line 98 in file User\main.asm
+      At line 280 in file User\main.asm
+
+DMA1_Channel4_5_IRQHandler 00000040
+
+Symbol: DMA1_Channel4_5_IRQHandler
+   Definitions
+      At line 312 in file User\main.asm
+   Uses
+      At line 99 in file User\main.asm
+      At line 281 in file User\main.asm
+
+Default_Handler 00000040
+
+Symbol: Default_Handler
+   Definitions
+      At line 268 in file User\main.asm
+   Uses
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+      None
+Comment: Default_Handler unused
+Delay1 0000002A
+
+Symbol: Delay1
+   Definitions
+      At line 208 in file User\main.asm
+   Uses
+      At line 189 in file User\main.asm
+      At line 214 in file User\main.asm
+
+Delay2 00000030
+
+Symbol: Delay2
+   Definitions
+      At line 222 in file User\main.asm
+   Uses
+      At line 202 in file User\main.asm
+      At line 228 in file User\main.asm
+
+EXTI0_1_IRQHandler 00000040
+
+Symbol: EXTI0_1_IRQHandler
+   Definitions
+      At line 306 in file User\main.asm
+   Uses
+      At line 93 in file User\main.asm
+      At line 275 in file User\main.asm
+
+EXTI2_3_IRQHandler 00000040
+
+Symbol: EXTI2_3_IRQHandler
+   Definitions
+      At line 307 in file User\main.asm
+   Uses
+      At line 94 in file User\main.asm
+      At line 276 in file User\main.asm
+
+EXTI4_15_IRQHandler 00000040
+
+Symbol: EXTI4_15_IRQHandler
+   Definitions
+      At line 308 in file User\main.asm
+   Uses
+      At line 95 in file User\main.asm
+      At line 277 in file User\main.asm
+
+FLASH_IRQHandler 00000040
+
+Symbol: FLASH_IRQHandler
+   Definitions
+      At line 304 in file User\main.asm
+   Uses
+      At line 91 in file User\main.asm
+      At line 273 in file User\main.asm
+
+HardFault_Handler 00000038
+
+Symbol: HardFault_Handler
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
+   Definitions
+      At line 248 in file User\main.asm
+   Uses
+      At line 73 in file User\main.asm
+      At line 249 in file User\main.asm
+
+I2C1_IRQHandler 00000040
+
+Symbol: I2C1_IRQHandler
+   Definitions
+      At line 323 in file User\main.asm
+   Uses
+      At line 111 in file User\main.asm
+      At line 292 in file User\main.asm
+
+I2C2_IRQHandler 00000040
+
+Symbol: I2C2_IRQHandler
+   Definitions
+      At line 324 in file User\main.asm
+   Uses
+      At line 112 in file User\main.asm
+      At line 293 in file User\main.asm
+
+Init 00000002
+
+Symbol: Init
+   Definitions
+      At line 157 in file User\main.asm
+   Uses
+      At line 144 in file User\main.asm
+Comment: Init used once
+Loop1 00000016
+
+Symbol: Loop1
+   Definitions
+      At line 180 in file User\main.asm
+   Uses
+      At line 174 in file User\main.asm
+      At line 230 in file User\main.asm
+
+Loop2 00000020
+
+Symbol: Loop2
+   Definitions
+      At line 194 in file User\main.asm
+   Uses
+      At line 216 in file User\main.asm
+Comment: Loop2 used once
+NMI_Handler 00000036
+
+Symbol: NMI_Handler
+   Definitions
+      At line 242 in file User\main.asm
+   Uses
+      At line 72 in file User\main.asm
+      At line 243 in file User\main.asm
+
+PVD_IRQHandler 00000040
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Relocatable symbols
+
+
+Symbol: PVD_IRQHandler
+   Definitions
+      At line 302 in file User\main.asm
+   Uses
+      At line 89 in file User\main.asm
+      At line 271 in file User\main.asm
+
+PendSV_Handler 0000003C
+
+Symbol: PendSV_Handler
+   Definitions
+      At line 258 in file User\main.asm
+   Uses
+      At line 84 in file User\main.asm
+      At line 259 in file User\main.asm
+
+RCC_IRQHandler 00000040
+
+Symbol: RCC_IRQHandler
+   Definitions
+      At line 305 in file User\main.asm
+   Uses
+      At line 92 in file User\main.asm
+      At line 274 in file User\main.asm
+
+RTC_IRQHandler 00000040
+
+Symbol: RTC_IRQHandler
+   Definitions
+      At line 303 in file User\main.asm
+   Uses
+      At line 90 in file User\main.asm
+      At line 272 in file User\main.asm
+
+Reset_Handler 00000000
+
+Symbol: Reset_Handler
+   Definitions
+      At line 139 in file User\main.asm
+   Uses
+      At line 71 in file User\main.asm
+      At line 140 in file User\main.asm
+
+SPI1_IRQHandler 00000040
+
+Symbol: SPI1_IRQHandler
+   Definitions
+      At line 325 in file User\main.asm
+   Uses
+      At line 113 in file User\main.asm
+      At line 294 in file User\main.asm
+
+SPI2_IRQHandler 00000040
+
+Symbol: SPI2_IRQHandler
+   Definitions
+      At line 326 in file User\main.asm
+   Uses
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 114 in file User\main.asm
+      At line 295 in file User\main.asm
+
+SVC_Handler 0000003A
+
+Symbol: SVC_Handler
+   Definitions
+      At line 253 in file User\main.asm
+   Uses
+      At line 81 in file User\main.asm
+      At line 254 in file User\main.asm
+
+SysTick_Handler 0000003E
+
+Symbol: SysTick_Handler
+   Definitions
+      At line 263 in file User\main.asm
+   Uses
+      At line 85 in file User\main.asm
+      At line 264 in file User\main.asm
+
+TIM14_IRQHandler 00000040
+
+Symbol: TIM14_IRQHandler
+   Definitions
+      At line 319 in file User\main.asm
+   Uses
+      At line 107 in file User\main.asm
+      At line 288 in file User\main.asm
+
+TIM15_IRQHandler 00000040
+
+Symbol: TIM15_IRQHandler
+   Definitions
+      At line 320 in file User\main.asm
+   Uses
+      At line 108 in file User\main.asm
+      At line 289 in file User\main.asm
+
+TIM16_IRQHandler 00000040
+
+Symbol: TIM16_IRQHandler
+   Definitions
+      At line 321 in file User\main.asm
+   Uses
+      At line 109 in file User\main.asm
+      At line 290 in file User\main.asm
+
+TIM17_IRQHandler 00000040
+
+Symbol: TIM17_IRQHandler
+   Definitions
+      At line 322 in file User\main.asm
+   Uses
+      At line 110 in file User\main.asm
+      At line 291 in file User\main.asm
+
+TIM1_BRK_UP_TRG_COM_IRQHandler 00000040
+
+
+
+
+ARM Macro Assembler    Page 6 Alphabetic symbol ordering
+Relocatable symbols
+
+Symbol: TIM1_BRK_UP_TRG_COM_IRQHandler
+   Definitions
+      At line 314 in file User\main.asm
+   Uses
+      At line 101 in file User\main.asm
+      At line 283 in file User\main.asm
+
+TIM1_CC_IRQHandler 00000040
+
+Symbol: TIM1_CC_IRQHandler
+   Definitions
+      At line 315 in file User\main.asm
+   Uses
+      At line 102 in file User\main.asm
+      At line 284 in file User\main.asm
+
+TIM2_IRQHandler 00000040
+
+Symbol: TIM2_IRQHandler
+   Definitions
+      At line 316 in file User\main.asm
+   Uses
+      At line 103 in file User\main.asm
+      At line 285 in file User\main.asm
+
+TIM3_IRQHandler 00000040
+
+Symbol: TIM3_IRQHandler
+   Definitions
+      At line 317 in file User\main.asm
+   Uses
+      At line 104 in file User\main.asm
+      At line 286 in file User\main.asm
+
+TIM6_DAC_IRQHandler 00000040
+
+Symbol: TIM6_DAC_IRQHandler
+   Definitions
+      At line 318 in file User\main.asm
+   Uses
+      At line 105 in file User\main.asm
+      At line 287 in file User\main.asm
+
+TSC_IRQHandler 00000040
+
+Symbol: TSC_IRQHandler
+   Definitions
+      At line 309 in file User\main.asm
+   Uses
+      At line 96 in file User\main.asm
+      At line 278 in file User\main.asm
+
+USART1_IRQHandler 00000040
+
+Symbol: USART1_IRQHandler
+   Definitions
+      At line 327 in file User\main.asm
+   Uses
+      At line 115 in file User\main.asm
+
+
+
+ARM Macro Assembler    Page 7 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 296 in file User\main.asm
+
+USART2_IRQHandler 00000040
+
+Symbol: USART2_IRQHandler
+   Definitions
+      At line 328 in file User\main.asm
+   Uses
+      At line 116 in file User\main.asm
+      At line 297 in file User\main.asm
+
+WWDG_IRQHandler 00000040
+
+Symbol: WWDG_IRQHandler
+   Definitions
+      At line 301 in file User\main.asm
+   Uses
+      At line 88 in file User\main.asm
+      At line 270 in file User\main.asm
+
+42 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+AHB2PERIPH_BASE 48000000
+
+Symbol: AHB2PERIPH_BASE
+   Definitions
+      At line 4 in file User\stm32f051r8t6.asm
+   Uses
+      At line 24 in file User\stm32f051r8t6.asm
+Comment: AHB2PERIPH_BASE used once
+AHBPERIPH_BASE 40020000
+
+Symbol: AHBPERIPH_BASE
+   Definitions
+      At line 3 in file User\stm32f051r8t6.asm
+   Uses
+      At line 7 in file User\stm32f051r8t6.asm
+Comment: AHBPERIPH_BASE used once
+GPIOC_AFRH 48000824
+
+Symbol: GPIOC_AFRH
+   Definitions
+      At line 34 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_AFRH unused
+GPIOC_AFRL 48000820
+
+Symbol: GPIOC_AFRL
+   Definitions
+      At line 33 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_AFRL unused
+GPIOC_BASE 48000800
+
+Symbol: GPIOC_BASE
+   Definitions
+      At line 24 in file User\stm32f051r8t6.asm
+   Uses
+      At line 25 in file User\stm32f051r8t6.asm
+      At line 26 in file User\stm32f051r8t6.asm
+      At line 27 in file User\stm32f051r8t6.asm
+      At line 28 in file User\stm32f051r8t6.asm
+      At line 29 in file User\stm32f051r8t6.asm
+      At line 30 in file User\stm32f051r8t6.asm
+      At line 31 in file User\stm32f051r8t6.asm
+      At line 32 in file User\stm32f051r8t6.asm
+      At line 33 in file User\stm32f051r8t6.asm
+      At line 34 in file User\stm32f051r8t6.asm
+      At line 35 in file User\stm32f051r8t6.asm
+
+GPIOC_BRR 48000828
+
+Symbol: GPIOC_BRR
+   Definitions
+      At line 35 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_BRR unused
+GPIOC_BSRR 48000818
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
+
+Symbol: GPIOC_BSRR
+   Definitions
+      At line 31 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_BSRR unused
+GPIOC_IDR 48000810
+
+Symbol: GPIOC_IDR
+   Definitions
+      At line 29 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_IDR unused
+GPIOC_LCKR 4800081C
+
+Symbol: GPIOC_LCKR
+   Definitions
+      At line 32 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_LCKR unused
+GPIOC_MODER 48000800
+
+Symbol: GPIOC_MODER
+   Definitions
+      At line 25 in file User\stm32f051r8t6.asm
+   Uses
+      At line 170 in file User\main.asm
+Comment: GPIOC_MODER used once
+GPIOC_ODR 48000814
+
+Symbol: GPIOC_ODR
+   Definitions
+      At line 30 in file User\stm32f051r8t6.asm
+   Uses
+      At line 183 in file User\main.asm
+      At line 197 in file User\main.asm
+
+GPIOC_OSPEEDER 48000808
+
+Symbol: GPIOC_OSPEEDER
+   Definitions
+      At line 27 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_OSPEEDER unused
+GPIOC_OTYPER 48000804
+
+Symbol: GPIOC_OTYPER
+   Definitions
+      At line 26 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_OTYPER unused
+GPIOC_PUPDR 4800080C
+
+Symbol: GPIOC_PUPDR
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Absolute symbols
+
+   Definitions
+      At line 28 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_PUPDR unused
+Heap_Size 00000200
+
+Symbol: Heap_Size
+   Definitions
+      At line 28 in file User\main.asm
+   Uses
+      At line 40 in file User\main.asm
+Comment: Heap_Size used once
+PERIPH_BASE 40000000
+
+Symbol: PERIPH_BASE
+   Definitions
+      At line 2 in file User\stm32f051r8t6.asm
+   Uses
+      At line 3 in file User\stm32f051r8t6.asm
+      At line 4 in file User\stm32f051r8t6.asm
+
+RCC_AHBENR 40021014
+
+Symbol: RCC_AHBENR
+   Definitions
+      At line 13 in file User\stm32f051r8t6.asm
+   Uses
+      At line 165 in file User\main.asm
+Comment: RCC_AHBENR used once
+RCC_AHBRSTR 40021028
+
+Symbol: RCC_AHBRSTR
+   Definitions
+      At line 18 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_AHBRSTR unused
+RCC_APB1ENR 4002101C
+
+Symbol: RCC_APB1ENR
+   Definitions
+      At line 15 in file User\stm32f051r8t6.asm
+   Uses
+      At line 160 in file User\main.asm
+Comment: RCC_APB1ENR used once
+RCC_APB1RSTR 40021010
+
+Symbol: RCC_APB1RSTR
+   Definitions
+      At line 12 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_APB1RSTR unused
+RCC_APB2ENR 40021018
+
+Symbol: RCC_APB2ENR
+   Definitions
+      At line 14 in file User\stm32f051r8t6.asm
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Absolute symbols
+
+   Uses
+      None
+Comment: RCC_APB2ENR unused
+RCC_APB2RSTR 4002100C
+
+Symbol: RCC_APB2RSTR
+   Definitions
+      At line 11 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_APB2RSTR unused
+RCC_BASE 40021000
+
+Symbol: RCC_BASE
+   Definitions
+      At line 7 in file User\stm32f051r8t6.asm
+   Uses
+      At line 8 in file User\stm32f051r8t6.asm
+      At line 9 in file User\stm32f051r8t6.asm
+      At line 10 in file User\stm32f051r8t6.asm
+      At line 11 in file User\stm32f051r8t6.asm
+      At line 12 in file User\stm32f051r8t6.asm
+      At line 13 in file User\stm32f051r8t6.asm
+      At line 14 in file User\stm32f051r8t6.asm
+      At line 15 in file User\stm32f051r8t6.asm
+      At line 16 in file User\stm32f051r8t6.asm
+      At line 17 in file User\stm32f051r8t6.asm
+      At line 18 in file User\stm32f051r8t6.asm
+      At line 19 in file User\stm32f051r8t6.asm
+      At line 20 in file User\stm32f051r8t6.asm
+      At line 21 in file User\stm32f051r8t6.asm
+
+RCC_BDCR 40021020
+
+Symbol: RCC_BDCR
+   Definitions
+      At line 16 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_BDCR unused
+RCC_CFGR 40021004
+
+Symbol: RCC_CFGR
+   Definitions
+      At line 9 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CFGR unused
+RCC_CFGR2 4002102C
+
+Symbol: RCC_CFGR2
+   Definitions
+      At line 19 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CFGR2 unused
+RCC_CFGR3 40021030
+
+Symbol: RCC_CFGR3
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Absolute symbols
+
+   Definitions
+      At line 20 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CFGR3 unused
+RCC_CIR 40021008
+
+Symbol: RCC_CIR
+   Definitions
+      At line 10 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CIR unused
+RCC_CR 40021000
+
+Symbol: RCC_CR
+   Definitions
+      At line 8 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CR unused
+RCC_CR2 40021034
+
+Symbol: RCC_CR2
+   Definitions
+      At line 21 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CR2 unused
+RCC_CSR 40021024
+
+Symbol: RCC_CSR
+   Definitions
+      At line 17 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CSR unused
+Stack_Size 00000400
+
+Symbol: Stack_Size
+   Definitions
+      At line 5 in file User\main.asm
+   Uses
+      At line 15 in file User\main.asm
+Comment: Stack_Size used once
+__Vectors_Size 000000BC
+
+Symbol: __Vectors_Size
+   Definitions
+      At line 125 in file User\main.asm
+   Uses
+      At line 64 in file User\main.asm
+Comment: __Vectors_Size used once
+33 symbols
+419 symbols in table

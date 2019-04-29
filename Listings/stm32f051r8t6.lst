@@ -1,0 +1,407 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; ќбъ€вление основных шин и базовых адресов 
+    2 00000000 40000000 
+                       PERIPH_BASE
+                               EQU              (0x40000000)
+    3 00000000 40020000 
+                       AHBPERIPH_BASE
+                               EQU              (PERIPH_BASE + 0x00020000)
+    4 00000000 48000000 
+                       AHB2PERIPH_BASE
+                               EQU              (PERIPH_BASE + 0x08000000)
+    5 00000000         
+    6 00000000         ; –егистр тактировани€ RCC
+    7 00000000 40021000 
+                       RCC_BASE
+                               EQU              (AHBPERIPH_BASE + 0x00001000)
+    8 00000000 40021000 
+                       RCC_CR  EQU              (RCC_BASE + 0x00000000)
+    9 00000000 40021004 
+                       RCC_CFGR
+                               EQU              (RCC_BASE + 0x00000004)
+   10 00000000 40021008 
+                       RCC_CIR EQU              (RCC_BASE + 0x00000008)
+   11 00000000 4002100C 
+                       RCC_APB2RSTR
+                               EQU              (RCC_BASE + 0x0000000C)
+   12 00000000 40021010 
+                       RCC_APB1RSTR
+                               EQU              (RCC_BASE + 0x00000010)
+   13 00000000 40021014 
+                       RCC_AHBENR
+                               EQU              (RCC_BASE + 0x00000014)
+   14 00000000 40021018 
+                       RCC_APB2ENR
+                               EQU              (RCC_BASE + 0x00000018)
+   15 00000000 4002101C 
+                       RCC_APB1ENR
+                               EQU              (RCC_BASE + 0x0000001C)
+   16 00000000 40021020 
+                       RCC_BDCR
+                               EQU              (RCC_BASE + 0x00000020)
+   17 00000000 40021024 
+                       RCC_CSR EQU              (RCC_BASE + 0x00000024)
+   18 00000000 40021028 
+                       RCC_AHBRSTR
+                               EQU              (RCC_BASE + 0x00000028)
+   19 00000000 4002102C 
+                       RCC_CFGR2
+                               EQU              (RCC_BASE + 0x0000002C)
+   20 00000000 40021030 
+                       RCC_CFGR3
+                               EQU              (RCC_BASE + 0x00000030)
+   21 00000000 40021034 
+                       RCC_CR2 EQU              (RCC_BASE + 0x00000034)
+   22 00000000         
+   23 00000000         ; –егистр GPIOC 
+   24 00000000 48000800 
+                       GPIOC_BASE
+                               EQU              (AHB2PERIPH_BASE + 0x00000800)
+   25 00000000 48000800 
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                       GPIOC_MODER
+                               EQU              (GPIOC_BASE + 0x00000000)
+   26 00000000 48000804 
+                       GPIOC_OTYPER
+                               EQU              (GPIOC_BASE + 0x00000004)
+   27 00000000 48000808 
+                       GPIOC_OSPEEDER
+                               EQU              (GPIOC_BASE + 0x00000008)
+   28 00000000 4800080C 
+                       GPIOC_PUPDR
+                               EQU              (GPIOC_BASE + 0x0000000C)
+   29 00000000 48000810 
+                       GPIOC_IDR
+                               EQU              (GPIOC_BASE + 0x00000010)
+   30 00000000 48000814 
+                       GPIOC_ODR
+                               EQU              (GPIOC_BASE + 0x00000014)
+   31 00000000 48000818 
+                       GPIOC_BSRR
+                               EQU              (GPIOC_BASE + 0x00000018)
+   32 00000000 4800081C 
+                       GPIOC_LCKR
+                               EQU              (GPIOC_BASE + 0x0000001C)
+   33 00000000 48000820 
+                       GPIOC_AFRL
+                               EQU              (GPIOC_BASE + 0x00000020)
+   34 00000000 48000824 
+                       GPIOC_AFRH
+                               EQU              (GPIOC_BASE + 0x00000024)
+   35 00000000 48000828 
+                       GPIOC_BRR
+                               EQU              (GPIOC_BASE + 0x00000028)
+   36 00000000         
+   37 00000000                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=interw
+ork --depend=.\objects\stm32f051r8t6.d -o.\objects\stm32f051r8t6.o -I.\RTE\_Tem
+plate -IC:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\2.0.0\Drivers\CMSIS\Device\ST\ST
+M32F0xx\Include -IC:\Keil_v5\ARM\CMSIS\Include --predefine="__UVISION_VERSION S
+ETA 523" --predefine="STM32F051x8 SETA 1" --list=.\listings\stm32f051r8t6.lst U
+ser\stm32f051r8t6.asm
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+AHB2PERIPH_BASE 48000000
+
+Symbol: AHB2PERIPH_BASE
+   Definitions
+      At line 4 in file User\stm32f051r8t6.asm
+   Uses
+      At line 24 in file User\stm32f051r8t6.asm
+Comment: AHB2PERIPH_BASE used once
+AHBPERIPH_BASE 40020000
+
+Symbol: AHBPERIPH_BASE
+   Definitions
+      At line 3 in file User\stm32f051r8t6.asm
+   Uses
+      At line 7 in file User\stm32f051r8t6.asm
+Comment: AHBPERIPH_BASE used once
+GPIOC_AFRH 48000824
+
+Symbol: GPIOC_AFRH
+   Definitions
+      At line 34 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_AFRH unused
+GPIOC_AFRL 48000820
+
+Symbol: GPIOC_AFRL
+   Definitions
+      At line 33 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_AFRL unused
+GPIOC_BASE 48000800
+
+Symbol: GPIOC_BASE
+   Definitions
+      At line 24 in file User\stm32f051r8t6.asm
+   Uses
+      At line 25 in file User\stm32f051r8t6.asm
+      At line 26 in file User\stm32f051r8t6.asm
+      At line 27 in file User\stm32f051r8t6.asm
+      At line 28 in file User\stm32f051r8t6.asm
+      At line 29 in file User\stm32f051r8t6.asm
+      At line 30 in file User\stm32f051r8t6.asm
+      At line 31 in file User\stm32f051r8t6.asm
+      At line 32 in file User\stm32f051r8t6.asm
+      At line 33 in file User\stm32f051r8t6.asm
+      At line 34 in file User\stm32f051r8t6.asm
+      At line 35 in file User\stm32f051r8t6.asm
+
+GPIOC_BRR 48000828
+
+Symbol: GPIOC_BRR
+   Definitions
+      At line 35 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_BRR unused
+GPIOC_BSRR 48000818
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
+
+Symbol: GPIOC_BSRR
+   Definitions
+      At line 31 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_BSRR unused
+GPIOC_IDR 48000810
+
+Symbol: GPIOC_IDR
+   Definitions
+      At line 29 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_IDR unused
+GPIOC_LCKR 4800081C
+
+Symbol: GPIOC_LCKR
+   Definitions
+      At line 32 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_LCKR unused
+GPIOC_MODER 48000800
+
+Symbol: GPIOC_MODER
+   Definitions
+      At line 25 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_MODER unused
+GPIOC_ODR 48000814
+
+Symbol: GPIOC_ODR
+   Definitions
+      At line 30 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_ODR unused
+GPIOC_OSPEEDER 48000808
+
+Symbol: GPIOC_OSPEEDER
+   Definitions
+      At line 27 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_OSPEEDER unused
+GPIOC_OTYPER 48000804
+
+Symbol: GPIOC_OTYPER
+   Definitions
+      At line 26 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_OTYPER unused
+GPIOC_PUPDR 4800080C
+
+Symbol: GPIOC_PUPDR
+   Definitions
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Absolute symbols
+
+      At line 28 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: GPIOC_PUPDR unused
+PERIPH_BASE 40000000
+
+Symbol: PERIPH_BASE
+   Definitions
+      At line 2 in file User\stm32f051r8t6.asm
+   Uses
+      At line 3 in file User\stm32f051r8t6.asm
+      At line 4 in file User\stm32f051r8t6.asm
+
+RCC_AHBENR 40021014
+
+Symbol: RCC_AHBENR
+   Definitions
+      At line 13 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_AHBENR unused
+RCC_AHBRSTR 40021028
+
+Symbol: RCC_AHBRSTR
+   Definitions
+      At line 18 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_AHBRSTR unused
+RCC_APB1ENR 4002101C
+
+Symbol: RCC_APB1ENR
+   Definitions
+      At line 15 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_APB1ENR unused
+RCC_APB1RSTR 40021010
+
+Symbol: RCC_APB1RSTR
+   Definitions
+      At line 12 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_APB1RSTR unused
+RCC_APB2ENR 40021018
+
+Symbol: RCC_APB2ENR
+   Definitions
+      At line 14 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_APB2ENR unused
+RCC_APB2RSTR 4002100C
+
+Symbol: RCC_APB2RSTR
+   Definitions
+      At line 11 in file User\stm32f051r8t6.asm
+   Uses
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Absolute symbols
+
+      None
+Comment: RCC_APB2RSTR unused
+RCC_BASE 40021000
+
+Symbol: RCC_BASE
+   Definitions
+      At line 7 in file User\stm32f051r8t6.asm
+   Uses
+      At line 8 in file User\stm32f051r8t6.asm
+      At line 9 in file User\stm32f051r8t6.asm
+      At line 10 in file User\stm32f051r8t6.asm
+      At line 11 in file User\stm32f051r8t6.asm
+      At line 12 in file User\stm32f051r8t6.asm
+      At line 13 in file User\stm32f051r8t6.asm
+      At line 14 in file User\stm32f051r8t6.asm
+      At line 15 in file User\stm32f051r8t6.asm
+      At line 16 in file User\stm32f051r8t6.asm
+      At line 17 in file User\stm32f051r8t6.asm
+      At line 18 in file User\stm32f051r8t6.asm
+      At line 19 in file User\stm32f051r8t6.asm
+      At line 20 in file User\stm32f051r8t6.asm
+      At line 21 in file User\stm32f051r8t6.asm
+
+RCC_BDCR 40021020
+
+Symbol: RCC_BDCR
+   Definitions
+      At line 16 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_BDCR unused
+RCC_CFGR 40021004
+
+Symbol: RCC_CFGR
+   Definitions
+      At line 9 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CFGR unused
+RCC_CFGR2 4002102C
+
+Symbol: RCC_CFGR2
+   Definitions
+      At line 19 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CFGR2 unused
+RCC_CFGR3 40021030
+
+Symbol: RCC_CFGR3
+   Definitions
+      At line 20 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CFGR3 unused
+RCC_CIR 40021008
+
+Symbol: RCC_CIR
+   Definitions
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Absolute symbols
+
+      At line 10 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CIR unused
+RCC_CR 40021000
+
+Symbol: RCC_CR
+   Definitions
+      At line 8 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CR unused
+RCC_CR2 40021034
+
+Symbol: RCC_CR2
+   Definitions
+      At line 21 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CR2 unused
+RCC_CSR 40021024
+
+Symbol: RCC_CSR
+   Definitions
+      At line 17 in file User\stm32f051r8t6.asm
+   Uses
+      None
+Comment: RCC_CSR unused
+30 symbols
+362 symbols in table

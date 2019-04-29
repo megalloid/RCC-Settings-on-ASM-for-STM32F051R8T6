@@ -1,0 +1,7 @@
+--cpu Cortex-M0
+".\objects\stm32f051r8t6.o"
+".\objects\main.o"
+--diag_suppress 6314 --strict --scatter ".\Objects\Template.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\Template.map" -o .\Objects\Template.axf

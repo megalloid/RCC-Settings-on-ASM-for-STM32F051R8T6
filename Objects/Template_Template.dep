@@ -1,0 +1,4 @@
+Dependencies for Project 'Template', Target 'Template': (DO NOT MODIFY !)
+F (.\User\stm32f051r8t6.asm)(0x5CC6DFB5)(--cpu Cortex-M0 -g --apcs=interwork -I.\RTE\_Template-IC:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\2.0.0\Drivers\CMSIS\Device\ST\STM32F0xx\Include-IC:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 523" --pd "STM32F051x8 SETA 1"--list .\listings\stm32f051r8t6.lst --xref -o .\objects\stm32f051r8t6.o --depend .\objects\stm32f051r8t6.d)
+F (.\User\main.asm)(0x5CC6E985)(--cpu Cortex-M0 -g --apcs=interwork -I.\RTE\_Template-IC:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\2.0.0\Drivers\CMSIS\Device\ST\STM32F0xx\Include-IC:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 523" --pd "STM32F051x8 SETA 1"--list .\listings\main.lst --xref -o .\objects\main.o --depend .\objects\main.d)
+I (User\stm32f051r8t6.asm)(0x5CC6DFB5)

@@ -407,7 +407,7 @@ ARM Macro Assembler    Page 7
                                                             з R1
   186 0000001C         
   187 0000001C         
-  188 0000001C 4811            LDR              r0, =(5)
+  188 0000001C 4811            LDR              r0, =(800000)
   189 0000001E E7FE            B                DelayOn
   190 00000020         
   191 00000020         ; Конец программы
@@ -423,7 +423,7 @@ ARM Macro Assembler    Page 7
                                                             есу [R0] значение и
                                                             з R1 
   200 00000026         
-  201 00000026 480F            LDR              r0, =(5)
+  201 00000026 480F            LDR              r0, =(800000)
   202 00000028 E7FE            B                DelayOff
   203 0000002A         
   204 0000002A         ; Конец программы
@@ -666,7 +666,7 @@ ARM Macro Assembler    Page 11
               00040000 
               48000814 
               00000200 
-              00000005 
+              000C3500 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=interw
 ork --depend=.\objects\main.d -o.\objects\main.o -I.\RTE\_Template -IC:\Keil_v5

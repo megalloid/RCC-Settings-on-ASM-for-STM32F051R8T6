@@ -171,13 +171,13 @@ Init    		PROC
 				LDR 	r1, =(1 << (9*2))							; Каждый пин имеет два бита параметров, поэтому умножаем на 2 
 				STR 	r1, [r0]     								; Записываем по адресу [R0] значение из R1				
 	
-				B		Loop1
+				B		BlinkLoopOn
 			
 				; Конец программы
 				ENDP
 				
 
-Loop1			PROC
+BlinkLoopOn		PROC
 	
 				; Записываем высокий уровень в пин PC9
 				LDR 	r0, =(GPIOC_ODR)
@@ -186,12 +186,12 @@ Loop1			PROC
 	
 	
 				LDR 	r0, =(5)				
-				B		Delay1		
+				B		DelayOn		
 				
 				; Конец программы
 				ENDP 		
 						
-Loop2			PROC
+BlinkLoopOff	PROC
 	
 				; Записываем низкий уровень в пин PC9
 				LDR 	r0, =(GPIOC_ODR)
@@ -199,35 +199,35 @@ Loop2			PROC
 				STR 	r1, [r0] 						; Записываем по адресу [R0] значение из R1	
 				
 				LDR 	r0, =(5)				
-				B		Delay2
+				B		DelayOff
 				
 				; Конец программы
 				ENDP			
 
 
-Delay1 			PROC
+DelayOn 		PROC
 				
 				; Вычитаем единицу
 				SUBS R0, R0, #1
 				
 				; Пока не обнулилась, крутим дальше
-				BNE Delay1
+				BNE DelayOn
           
-				B Loop2
+				B BlinkLoopOff
 				
 				; Конец программы
 				ENDP
 					
 					
-Delay2 			PROC
+DelayOff 		PROC
 				
 				; Вычитаем единицу
 				SUBS R0, R0, #1
 				
 				; Пока не обнулилась, крутим дальше
-				BNE Delay2
+				BNE DelayOff
           
-				B Loop1
+				B BlinkLoopOn
 				
 				; Конец программы
 				ENDP

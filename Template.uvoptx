@@ -187,7 +187,7 @@
       <pMultCmds></pMultCmds>
       <SystemViewers>
         <Entry>
-          <Name>System Viewer\GPIOC</Name>
+          <Name>System Viewer\Flash</Name>
           <WinId>35905</WinId>
         </Entry>
         <Entry>

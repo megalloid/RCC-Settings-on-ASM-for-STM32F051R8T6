@@ -161,74 +161,20 @@ Init    		PROC
 				LDR 	r1, =(1 << 28)								; Ставим 28 байт в значение 1
 				STR 	r1, [r0]									; Записываем по адресу [R0] значение из R1	
 
-				; Включаем тактирование на GPIOC в регистре RCC 
-				LDR 	r0, =(RCC_AHBENR)							; Записываем в R0 адрес регистра RCC + смещение 14
-				LDR 	r1, =(0x00080014) 							; Записываем в R1 19-й байт в 1
-				STR 	r1, [r0]     								; Записываем значение R0 в регистр с адресом r1
+				; Включаем задержку для Flash = 1
+				LDR 	r0, =(FLASH_ACR)							
+				LDR 	r1, =(1)									; Ставим 0 байт в значение 1
+				STR 	r1, [r0]
 
-				; Включаем пин 9 порта GPIOC как выход
-				LDR 	r0, =(GPIOC_MODER)							; Записываем в R0 адрес регистра GPIOC + смещение 0
-				LDR 	r1, =(1 << (9*2))							; Каждый пин имеет два бита параметров, поэтому умножаем на 2 
-				STR 	r1, [r0]     								; Записываем по адресу [R0] значение из R1				
-	
-				B		BlinkLoopOn
-			
-				; Конец программы
-				ENDP
+				; Включаем HSE
+				LDR 	r0, =(RCC_CR)							
+				LDR 	r1, [r0]	
+				LDR 	r2, =(0x10000)	
+				ORRS	r2, r2, r1
+				STR		r2, [r0]
 				
+				B	.
 
-BlinkLoopOn		PROC
-	
-				; Записываем высокий уровень в пин PC9
-				LDR 	r0, =(GPIOC_ODR)
-				LDR 	r1, =(1 << 9)
-				STR 	r1, [r0]     					; Записываем по адресу [R0] значение из R1
-	
-	
-				LDR 	r0, =(800000)				
-				B		DelayOn		
-				
-				; Конец программы
-				ENDP 		
-						
-BlinkLoopOff	PROC
-	
-				; Записываем низкий уровень в пин PC9
-				LDR 	r0, =(GPIOC_ODR)
-				LDR 	r1, =(0)
-				STR 	r1, [r0] 						; Записываем по адресу [R0] значение из R1	
-				
-				LDR 	r0, =(800000)				
-				B		DelayOff
-				
-				; Конец программы
-				ENDP			
-
-
-DelayOn 		PROC
-				
-				; Вычитаем единицу
-				SUBS R0, R0, #1
-				
-				; Пока не обнулилась, крутим дальше
-				BNE DelayOn
-          
-				B BlinkLoopOff
-				
-				; Конец программы
-				ENDP
-					
-					
-DelayOff 		PROC
-				
-				; Вычитаем единицу
-				SUBS R0, R0, #1
-				
-				; Пока не обнулилась, крутим дальше
-				BNE DelayOff
-          
-				B BlinkLoopOn
-				
 				; Конец программы
 				ENDP
 					
@@ -245,26 +191,31 @@ NMI_Handler     PROC
                 B       .
                 ENDP
 					
+					
 HardFault_Handler\
                 PROC
                 EXPORT  HardFault_Handler              	[WEAK]
                 B       .
                 ENDP
 					
+					
 SVC_Handler     PROC
                 EXPORT  SVC_Handler                   	[WEAK]
                 B       .
                 ENDP
+					
 					
 PendSV_Handler  PROC
                 EXPORT  PendSV_Handler                 	[WEAK]
                 B       .
                 ENDP
 					
+					
 SysTick_Handler PROC
                 EXPORT  SysTick_Handler                	[WEAK]
                 B       .
                 ENDP
+
 
 Default_Handler PROC
 
@@ -297,7 +248,6 @@ Default_Handler PROC
                 EXPORT  USART1_IRQHandler              	[WEAK]
                 EXPORT  USART2_IRQHandler              	[WEAK]
                 EXPORT  CEC_IRQHandler                 	[WEAK]
-
 
 WWDG_IRQHandler
 PVD_IRQHandler

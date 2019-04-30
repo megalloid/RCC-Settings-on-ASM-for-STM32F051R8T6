@@ -141,7 +141,7 @@ Reset_Handler   PROC												; Объявляем начало функции
 																	; WEAK - говорит о том, что она может быть переобъявлена в другом месте проекта
 					
 				; Начало пользовательской программы
-				B 		Init
+				B 		Start
                 ENDP			
 
 
@@ -154,7 +154,7 @@ Reset_Handler   PROC												; Объявляем начало функции
 				GET 	stm32f051r8t6.asm
 					
 					
-Init    		PROC
+Start    		PROC
 
 				; Включаем тактирование на Power Interface 
 				LDR 	r0, =(RCC_APB1ENR)							; Записываем в R0 адрес регистра RCC + значение смещения параметра APB1ENR
@@ -169,19 +169,59 @@ Init    		PROC
 				; Включаем HSE
 				LDR 	r0, =(RCC_CR)							
 				LDR 	r1, [r0]	
-				LDR 	r2, =(0x10000)	
+				LDR 	r2, =(RCC_CR_HSEON)	
 				ORRS	r2, r2, r1
-				;STR		r2, [r0]
+				STR		r2, [r0]
 				
 				; Проверяем флаг HSERDY
 				LDR 	r0, =(RCC_CR)	
 wait_hserdy
 				LDR 	r1, [r0]
-				LDR 	r2, =(0x20000)
+				LDR 	r2, =(RCC_CR_HSERDY)
 				TST		r1, r2
 				BEQ 	wait_hserdy
 				
+				; Устанавливаем множитель для PLL в значение 6
+				LDR 	r0, =(RCC_CFGR)
+				LDR		r1, =((6 - 2) << 18)
+				STR		r1, [r0]
 				
+				
+				; Выбираем HSE как источник тактового сигнала для PLL
+				LDR 	r0, =(RCC_CFGR)							
+				LDR 	r1, [r0]	
+				LDR 	r2, =(2 << 15)	
+				ORRS	r2, r2, r1
+				STR		r2, [r0]
+				
+				
+				; Включаем PLL и ждём пока запустится
+				LDR 	r0, =(RCC_CR)							
+				LDR 	r1, [r0]	
+				LDR 	r2, =(RCC_CR_PLLON)	
+				ORRS	r2, r2, r1
+				STR		r2, [r0]				
+wait_pllrdy
+				LDR 	r1, [r0]
+				LDR 	r2, =(RCC_CR_PLLRDY)
+				TST		r1, r2
+				BEQ 	wait_pllrdy			
+				
+				
+				; Выбираем HSE как источник тактового сигнала для PLL
+				LDR 	r0, =(RCC_CFGR)							
+				LDR 	r1, [r0]	
+				LDR 	r2, =(2)	
+				ORRS	r2, r2, r1
+				STR		r2, [r0]
+				
+wait_swsrdy
+				LDR 	r1, [r0]
+				LDR 	r2, =(RCC_CFGR_SWS_PLL)
+				TST		r1, r2
+				BEQ 	wait_swsrdy	
+				
+				; Инициализировано успешно
 				B	.
 
 				; Конец программы

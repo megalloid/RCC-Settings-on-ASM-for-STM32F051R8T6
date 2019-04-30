@@ -773,7 +773,7 @@ ARM Macro Assembler    Page 12
                        GPIOA_OTYPER
                                EQU              (GPIOA_BASE + 0x00000004)
   219 00000000 48000008 
-                       GPIOA_OSPEEDER
+                       GPIOA_OSPEEDR
                                EQU              (GPIOA_BASE + 0x00000008)
   220 00000000 4800000C 
                        GPIOA_PUPDR
@@ -817,7 +817,7 @@ ARM Macro Assembler    Page 13
                        GPIOB_OTYPER
                                EQU              (GPIOB_BASE + 0x00000004)
   235 00000000 48000408 
-                       GPIOB_OSPEEDER
+                       GPIOB_OSPEEDR
                                EQU              (GPIOB_BASE + 0x00000008)
   236 00000000 4800040C 
                        GPIOB_PUPDR
@@ -861,7 +861,7 @@ ARM Macro Assembler    Page 14
                        GPIOC_OTYPER
                                EQU              (GPIOC_BASE + 0x00000004)
   251 00000000 48000808 
-                       GPIOC_OSPEEDER
+                       GPIOC_OSPEEDR
                                EQU              (GPIOC_BASE + 0x00000008)
   252 00000000 4800080C 
                        GPIOC_PUPDR
@@ -899,7 +899,7 @@ ARM Macro Assembler    Page 14
                        GPIOD_OTYPER
                                EQU              (GPIOD_BASE + 0x00000004)
   267 00000000 48000C08 
-                       GPIOD_OSPEEDER
+                       GPIOD_OSPEEDR
                                EQU              (GPIOD_BASE + 0x00000008)
   268 00000000 48000C0C 
                        GPIOD_PUPDR
@@ -944,7 +944,7 @@ ARM Macro Assembler    Page 15
                        GPIOF_OTYPER
                                EQU              (GPIOF_BASE + 0x00000004)
   284 00000000 48001408 
-                       GPIOF_OSPEEDER
+                       GPIOF_OSPEEDR
                                EQU              (GPIOF_BASE + 0x00000008)
   285 00000000 4800140C 
                        GPIOF_PUPDR
@@ -3881,14 +3881,14 @@ Symbol: GPIOA_ODR
    Uses
       None
 Comment: GPIOA_ODR unused
-GPIOA_OSPEEDER 48000008
+GPIOA_OSPEEDR 48000008
 
-Symbol: GPIOA_OSPEEDER
+Symbol: GPIOA_OSPEEDR
    Definitions
       At line 219 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: GPIOA_OSPEEDER unused
+Comment: GPIOA_OSPEEDR unused
 GPIOA_OTYPER 48000004
 
 Symbol: GPIOA_OTYPER
@@ -3993,7 +3993,7 @@ Symbol: GPIOB_ODR
    Uses
       None
 Comment: GPIOB_ODR unused
-GPIOB_OSPEEDER 48000408
+GPIOB_OSPEEDR 48000408
 
 
 
@@ -4001,12 +4001,12 @@ ARM Macro Assembler    Page 20 Alphabetic symbol ordering
 Absolute symbols
 
 
-Symbol: GPIOB_OSPEEDER
+Symbol: GPIOB_OSPEEDR
    Definitions
       At line 235 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: GPIOB_OSPEEDER unused
+Comment: GPIOB_OSPEEDR unused
 GPIOB_OTYPER 48000404
 
 Symbol: GPIOB_OTYPER
@@ -4111,14 +4111,14 @@ Symbol: GPIOC_ODR
    Uses
       None
 Comment: GPIOC_ODR unused
-GPIOC_OSPEEDER 48000808
+GPIOC_OSPEEDR 48000808
 
-Symbol: GPIOC_OSPEEDER
+Symbol: GPIOC_OSPEEDR
    Definitions
       At line 251 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: GPIOC_OSPEEDER unused
+Comment: GPIOC_OSPEEDR unused
 GPIOC_OTYPER 48000804
 
 Symbol: GPIOC_OTYPER
@@ -4229,14 +4229,14 @@ Symbol: GPIOD_ODR
    Uses
       None
 Comment: GPIOD_ODR unused
-GPIOD_OSPEEDER 48000C08
+GPIOD_OSPEEDR 48000C08
 
-Symbol: GPIOD_OSPEEDER
+Symbol: GPIOD_OSPEEDR
    Definitions
       At line 267 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: GPIOD_OSPEEDER unused
+Comment: GPIOD_OSPEEDR unused
 GPIOD_OTYPER 48000C04
 
 Symbol: GPIOD_OTYPER
@@ -4347,14 +4347,14 @@ Symbol: GPIOF_ODR
    Uses
       None
 Comment: GPIOF_ODR unused
-GPIOF_OSPEEDER 48001408
+GPIOF_OSPEEDR 48001408
 
-Symbol: GPIOF_OSPEEDER
+Symbol: GPIOF_OSPEEDR
    Definitions
       At line 284 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: GPIOF_OSPEEDER unused
+Comment: GPIOF_OSPEEDR unused
 GPIOF_OTYPER 48001404
 
 Symbol: GPIOF_OTYPER

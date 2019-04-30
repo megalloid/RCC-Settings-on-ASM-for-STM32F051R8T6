@@ -221,6 +221,36 @@ wait_swsrdy
 				TST		r1, r2
 				BEQ 	wait_swsrdy	
 				
+				
+				; Выбираем HSE как источник тактового сигнала для PLL
+				LDR 	r0, =(RCC_CFGR)							
+				LDR 	r1, [r0]	
+				LDR 	r2, =(0x4000000)	
+				ORRS	r2, r2, r1
+				STR		r2, [r0]
+				
+				; Включаем тактирование на GPIOA в регистре RCC 
+				LDR 	r0, =(RCC_AHBENR)							
+				LDR 	r1, [r0]	
+				LDR 	r2, =(0x20000)	
+				ORRS	r2, r2, r1
+				STR		r2, [r0]    								
+
+				; Включаем устанавливаем режим AF на пин PA8 
+				LDR 	r0, =(GPIOA_MODER)							
+				LDR 	r1, [r0]	
+				LDR 	r2, =(0x20000)	
+				ORRS	r2, r2, r1
+				STR		r2, [r0]  
+				
+				
+				; Включаем устанавливаем режим AF на пин PA8 
+				LDR 	r0, =(GPIOA_OSPEEDR)							
+				LDR 	r1, [r0]	
+				LDR 	r2, =(0x30000)	
+				ORRS	r2, r2, r1
+				STR		r2, [r0]  
+				
 				; Инициализировано успешно
 				B	.
 

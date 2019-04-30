@@ -171,7 +171,16 @@ Init    		PROC
 				LDR 	r1, [r0]	
 				LDR 	r2, =(0x10000)	
 				ORRS	r2, r2, r1
-				STR		r2, [r0]
+				;STR		r2, [r0]
+				
+				; Проверяем флаг HSERDY
+				LDR 	r0, =(RCC_CR)	
+wait_hserdy
+				LDR 	r1, [r0]
+				LDR 	r2, =(0x20000)
+				TST		r1, r2
+				BEQ 	wait_hserdy
+				
 				
 				B	.
 

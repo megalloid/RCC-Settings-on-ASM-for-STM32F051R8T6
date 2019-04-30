@@ -2978,12 +2978,12 @@ ARM Macro Assembler    Page 46
   157 00000002         Init    PROC
   158 00000002         
   159 00000002         ; Включаем тактирование на Power Interface 
-  160 00000002 4809            LDR              r0, =(RCC_APB1ENR) ; Записываем
+  160 00000002 480B            LDR              r0, =(RCC_APB1ENR) ; Записываем
                                                              в R0 адрес регистр
                                                             а RCC + значение см
                                                             ещения параметра AP
                                                             B1ENR
-  161 00000004 4909            LDR              r1, =(1 << 28) ; Ставим 28 байт
+  161 00000004 490B            LDR              r1, =(1 << 28) ; Ставим 28 байт
                                                              в значение 1
   162 00000006 6001            STR              r1, [r0]    ; Записываем по адр
                                                             есу [R0] значение и
@@ -2996,228 +2996,238 @@ ARM Macro Assembler    Page 47
 
   163 00000008         
   164 00000008         ; Включаем задержку для Flash = 1
-  165 00000008 4809            LDR              r0, =(FLASH_ACR)
-  166 0000000A 490A            LDR              r1, =(1)    ; Ставим 0 байт в з
+  165 00000008 480B            LDR              r0, =(FLASH_ACR)
+  166 0000000A 490C            LDR              r1, =(1)    ; Ставим 0 байт в з
                                                             начение 1
   167 0000000C 6001            STR              r1, [r0]
   168 0000000E         
   169 0000000E         ; Включаем HSE
-  170 0000000E 480A            LDR              r0, =(RCC_CR)
+  170 0000000E 480C            LDR              r0, =(RCC_CR)
   171 00000010 6801            LDR              r1, [r0]
-  172 00000012 4A0A            LDR              r2, =(0x10000)
+  172 00000012 4A0C            LDR              r2, =(0x10000)
   173 00000014 430A            ORRS             r2, r2, r1
-  174 00000016 6002            STR              r2, [r0]
-  175 00000018         
-  176 00000018 E7FE            B                .
-  177 0000001A         
-  178 0000001A         ; Конец программы
-  179 0000001A                 ENDP
-  180 0000001A         
-  181 0000001A         ;#######################################################
+  174 00000016         ;STR  r2, [r0]
+  175 00000016         
+  176 00000016         ; Проверяем флаг HSERDY
+  177 00000016 480A            LDR              r0, =(RCC_CR)
+  178 00000018         wait_hserdy
+  179 00000018 6801            LDR              r1, [r0]
+  180 0000001A 4A0B            LDR              r2, =(0x20000)
+  181 0000001C 4211            TST              r1, r2
+  182 0000001E D0FB            BEQ              wait_hserdy
+  183 00000020         
+  184 00000020         
+  185 00000020 E7FE            B                .
+  186 00000022         
+  187 00000022         ; Конец программы
+  188 00000022                 ENDP
+  189 00000022         
+  190 00000022         ;#######################################################
                        ################# 
-  182 0000001A         ;       Конец программы
-  183 0000001A         ;#######################################################
+  191 00000022         ;       Конец программы
+  192 00000022         ;#######################################################
                        #################
-  184 0000001A         
-  185 0000001A         
-  186 0000001A         ;
-  187 0000001A         ; Обработчики исключений с переходами на свой же адрес (
+  193 00000022         
+  194 00000022         
+  195 00000022         ;
+  196 00000022         ; Обработчики исключений с переходами на свой же адрес (
                        бесконечный цикл)
-  188 0000001A         ;
-  189 0000001A         NMI_Handler
+  197 00000022         ;
+  198 00000022         NMI_Handler
                                PROC
-  190 0000001A                 EXPORT           NMI_Handler                    
+  199 00000022                 EXPORT           NMI_Handler                    
  [WEAK]
-  191 0000001A E7FE            B                .
-  192 0000001C                 ENDP
-  193 0000001C         
-  194 0000001C         
-  196 0000001C         HardFault_Handler
+  200 00000022 E7FE            B                .
+  201 00000024                 ENDP
+  202 00000024         
+  203 00000024         
+  205 00000024         HardFault_Handler
                                PROC
-  197 0000001C                 EXPORT           HardFault_Handler              
+  206 00000024                 EXPORT           HardFault_Handler              
  [WEAK]
-  198 0000001C E7FE            B                .
-  199 0000001E                 ENDP
-  200 0000001E         
-  201 0000001E         
-  202 0000001E         SVC_Handler
+  207 00000024 E7FE            B                .
+  208 00000026                 ENDP
+  209 00000026         
+  210 00000026         
+  211 00000026         SVC_Handler
                                PROC
-  203 0000001E                 EXPORT           SVC_Handler                    
+  212 00000026                 EXPORT           SVC_Handler                    
 [WEAK]
-  204 0000001E E7FE            B                .
-  205 00000020                 ENDP
-  206 00000020         
-  207 00000020         
-  208 00000020         PendSV_Handler
-                               PROC
-  209 00000020                 EXPORT           PendSV_Handler                 
- [WEAK]
-  210 00000020 E7FE            B                .
 
 
 
 ARM Macro Assembler    Page 48 
 
 
-  211 00000022                 ENDP
-  212 00000022         
-  213 00000022         
-  214 00000022         SysTick_Handler
+  213 00000026 E7FE            B                .
+  214 00000028                 ENDP
+  215 00000028         
+  216 00000028         
+  217 00000028         PendSV_Handler
                                PROC
-  215 00000022                 EXPORT           SysTick_Handler                
+  218 00000028                 EXPORT           PendSV_Handler                 
  [WEAK]
-  216 00000022 E7FE            B                .
-  217 00000024                 ENDP
-  218 00000024         
-  219 00000024         
-  220 00000024         Default_Handler
+  219 00000028 E7FE            B                .
+  220 0000002A                 ENDP
+  221 0000002A         
+  222 0000002A         
+  223 0000002A         SysTick_Handler
                                PROC
-  221 00000024         
-  222 00000024                 EXPORT           WWDG_IRQHandler                
+  224 0000002A                 EXPORT           SysTick_Handler                
  [WEAK]
-  223 00000024                 EXPORT           PVD_IRQHandler                 
+  225 0000002A E7FE            B                .
+  226 0000002C                 ENDP
+  227 0000002C         
+  228 0000002C         
+  229 0000002C         Default_Handler
+                               PROC
+  230 0000002C         
+  231 0000002C                 EXPORT           WWDG_IRQHandler                
  [WEAK]
-  224 00000024                 EXPORT           RTC_IRQHandler                 
+  232 0000002C                 EXPORT           PVD_IRQHandler                 
  [WEAK]
-  225 00000024                 EXPORT           FLASH_IRQHandler               
+  233 0000002C                 EXPORT           RTC_IRQHandler                 
  [WEAK]
-  226 00000024                 EXPORT           RCC_IRQHandler                 
+  234 0000002C                 EXPORT           FLASH_IRQHandler               
  [WEAK]
-  227 00000024                 EXPORT           EXTI0_1_IRQHandler             
+  235 0000002C                 EXPORT           RCC_IRQHandler                 
  [WEAK]
-  228 00000024                 EXPORT           EXTI2_3_IRQHandler             
+  236 0000002C                 EXPORT           EXTI0_1_IRQHandler             
  [WEAK]
-  229 00000024                 EXPORT           EXTI4_15_IRQHandler            
+  237 0000002C                 EXPORT           EXTI2_3_IRQHandler             
  [WEAK]
-  230 00000024                 EXPORT           TSC_IRQHandler                 
+  238 0000002C                 EXPORT           EXTI4_15_IRQHandler            
  [WEAK]
-  231 00000024                 EXPORT           DMA1_Channel1_IRQHandler       
+  239 0000002C                 EXPORT           TSC_IRQHandler                 
  [WEAK]
-  232 00000024                 EXPORT           DMA1_Channel2_3_IRQHandler     
+  240 0000002C                 EXPORT           DMA1_Channel1_IRQHandler       
  [WEAK]
-  233 00000024                 EXPORT           DMA1_Channel4_5_IRQHandler     
+  241 0000002C                 EXPORT           DMA1_Channel2_3_IRQHandler     
  [WEAK]
-  234 00000024                 EXPORT           ADC1_COMP_IRQHandler           
+  242 0000002C                 EXPORT           DMA1_Channel4_5_IRQHandler     
  [WEAK]
-  235 00000024                 EXPORT           TIM1_BRK_UP_TRG_COM_IRQHandler 
+  243 0000002C                 EXPORT           ADC1_COMP_IRQHandler           
  [WEAK]
-  236 00000024                 EXPORT           TIM1_CC_IRQHandler             
+  244 0000002C                 EXPORT           TIM1_BRK_UP_TRG_COM_IRQHandler 
  [WEAK]
-  237 00000024                 EXPORT           TIM2_IRQHandler                
+  245 0000002C                 EXPORT           TIM1_CC_IRQHandler             
  [WEAK]
-  238 00000024                 EXPORT           TIM3_IRQHandler                
+  246 0000002C                 EXPORT           TIM2_IRQHandler                
  [WEAK]
-  239 00000024                 EXPORT           TIM6_DAC_IRQHandler            
+  247 0000002C                 EXPORT           TIM3_IRQHandler                
  [WEAK]
-  240 00000024                 EXPORT           TIM14_IRQHandler               
+  248 0000002C                 EXPORT           TIM6_DAC_IRQHandler            
  [WEAK]
-  241 00000024                 EXPORT           TIM15_IRQHandler               
- [WEAK]
-  242 00000024                 EXPORT           TIM16_IRQHandler               
- [WEAK]
-  243 00000024                 EXPORT           TIM17_IRQHandler               
- [WEAK]
-  244 00000024                 EXPORT           I2C1_IRQHandler                
 
 
 
 ARM Macro Assembler    Page 49 
 
 
+  249 0000002C                 EXPORT           TIM14_IRQHandler               
  [WEAK]
-  245 00000024                 EXPORT           I2C2_IRQHandler                
+  250 0000002C                 EXPORT           TIM15_IRQHandler               
  [WEAK]
-  246 00000024                 EXPORT           SPI1_IRQHandler                
+  251 0000002C                 EXPORT           TIM16_IRQHandler               
  [WEAK]
-  247 00000024                 EXPORT           SPI2_IRQHandler                
+  252 0000002C                 EXPORT           TIM17_IRQHandler               
  [WEAK]
-  248 00000024                 EXPORT           USART1_IRQHandler              
+  253 0000002C                 EXPORT           I2C1_IRQHandler                
  [WEAK]
-  249 00000024                 EXPORT           USART2_IRQHandler              
+  254 0000002C                 EXPORT           I2C2_IRQHandler                
  [WEAK]
-  250 00000024                 EXPORT           CEC_IRQHandler                 
+  255 0000002C                 EXPORT           SPI1_IRQHandler                
  [WEAK]
-  251 00000024         
-  252 00000024         WWDG_IRQHandler
-  253 00000024         PVD_IRQHandler
-  254 00000024         RTC_IRQHandler
-  255 00000024         FLASH_IRQHandler
-  256 00000024         RCC_IRQHandler
-  257 00000024         EXTI0_1_IRQHandler
-  258 00000024         EXTI2_3_IRQHandler
-  259 00000024         EXTI4_15_IRQHandler
-  260 00000024         TSC_IRQHandler
-  261 00000024         DMA1_Channel1_IRQHandler
-  262 00000024         DMA1_Channel2_3_IRQHandler
-  263 00000024         DMA1_Channel4_5_IRQHandler
-  264 00000024         ADC1_COMP_IRQHandler
-  265 00000024         TIM1_BRK_UP_TRG_COM_IRQHandler
-  266 00000024         TIM1_CC_IRQHandler
-  267 00000024         TIM2_IRQHandler
-  268 00000024         TIM3_IRQHandler
-  269 00000024         TIM6_DAC_IRQHandler
-  270 00000024         TIM14_IRQHandler
-  271 00000024         TIM15_IRQHandler
-  272 00000024         TIM16_IRQHandler
-  273 00000024         TIM17_IRQHandler
-  274 00000024         I2C1_IRQHandler
-  275 00000024         I2C2_IRQHandler
-  276 00000024         SPI1_IRQHandler
-  277 00000024         SPI2_IRQHandler
-  278 00000024         USART1_IRQHandler
-  279 00000024         USART2_IRQHandler
-  280 00000024         CEC_IRQHandler
-  281 00000024         
-  282 00000024 E7FE            B                .
-  283 00000026         
-  284 00000026                 ENDP
-  285 00000026         
-  286 00000026 00 00           ALIGN
-  287 00000028         
-  288 00000028         
-  289 00000028         ;*******************************************************
-                       ************************
-  290 00000028         ;  Объявление и инициализация пользовательского стека и 
-                       кучи
-  291 00000028         ;*******************************************************
-                       ************************
-  292 00000028         ;
-  293 00000028         ;                 IF      :DEF:__MICROLIB
+  256 0000002C                 EXPORT           SPI2_IRQHandler                
+ [WEAK]
+  257 0000002C                 EXPORT           USART1_IRQHandler              
+ [WEAK]
+  258 0000002C                 EXPORT           USART2_IRQHandler              
+ [WEAK]
+  259 0000002C                 EXPORT           CEC_IRQHandler                 
+ [WEAK]
+  260 0000002C         
+  261 0000002C         WWDG_IRQHandler
+  262 0000002C         PVD_IRQHandler
+  263 0000002C         RTC_IRQHandler
+  264 0000002C         FLASH_IRQHandler
+  265 0000002C         RCC_IRQHandler
+  266 0000002C         EXTI0_1_IRQHandler
+  267 0000002C         EXTI2_3_IRQHandler
+  268 0000002C         EXTI4_15_IRQHandler
+  269 0000002C         TSC_IRQHandler
+  270 0000002C         DMA1_Channel1_IRQHandler
+  271 0000002C         DMA1_Channel2_3_IRQHandler
+  272 0000002C         DMA1_Channel4_5_IRQHandler
+  273 0000002C         ADC1_COMP_IRQHandler
+  274 0000002C         TIM1_BRK_UP_TRG_COM_IRQHandler
+  275 0000002C         TIM1_CC_IRQHandler
+  276 0000002C         TIM2_IRQHandler
+  277 0000002C         TIM3_IRQHandler
+  278 0000002C         TIM6_DAC_IRQHandler
+  279 0000002C         TIM14_IRQHandler
+  280 0000002C         TIM15_IRQHandler
+  281 0000002C         TIM16_IRQHandler
+  282 0000002C         TIM17_IRQHandler
+  283 0000002C         I2C1_IRQHandler
+  284 0000002C         I2C2_IRQHandler
+  285 0000002C         SPI1_IRQHandler
+  286 0000002C         SPI2_IRQHandler
+  287 0000002C         USART1_IRQHandler
+  288 0000002C         USART2_IRQHandler
+  289 0000002C         CEC_IRQHandler
+  290 0000002C         
+  291 0000002C E7FE            B                .
+  292 0000002E         
+  293 0000002E                 ENDP
+  294 0000002E         
+  295 0000002E 00 00           ALIGN
+  296 00000030         
 
 
 
 ARM Macro Assembler    Page 50 
 
 
-  294 00000028         ;
-  295 00000028         ;     EXPORT  __initial_sp
-  296 00000028         ;     EXPORT  __heap_base
-  297 00000028         ;     EXPORT  __heap_limit
-  298 00000028         ;
-  299 00000028         ;                ELSE
-  300 00000028         ;
-  301 00000028         ;     IMPORT  __use_two_region_memory
-  302 00000028         ;     EXPORT  __user_initial_stackheap
-  303 00000028         ;
-  304 00000028         ;__user_initial_stackheap
-  305 00000028         ;
-  306 00000028         ;     LDR     R0, =  Heap_Mem
-  307 00000028         ;     LDR     R1, =(Stack_Mem + Stack_Size)
-  308 00000028         ;     LDR     R2, = (Heap_Mem +  Heap_Size)
-  309 00000028         ;     LDR     R3, = Stack_Mem
-  310 00000028         ;     BX      LR
-  311 00000028         ;
-  312 00000028         ;     ALIGN
-  313 00000028         ;
-  314 00000028         ;                ENDIF
-  315 00000028         ;
-  316 00000028                 END
+  297 00000030         
+  298 00000030         ;*******************************************************
+                       ************************
+  299 00000030         ;  Объявление и инициализация пользовательского стека и 
+                       кучи
+  300 00000030         ;*******************************************************
+                       ************************
+  301 00000030         ;
+  302 00000030         ;                 IF      :DEF:__MICROLIB
+  303 00000030         ;
+  304 00000030         ;     EXPORT  __initial_sp
+  305 00000030         ;     EXPORT  __heap_base
+  306 00000030         ;     EXPORT  __heap_limit
+  307 00000030         ;
+  308 00000030         ;                ELSE
+  309 00000030         ;
+  310 00000030         ;     IMPORT  __use_two_region_memory
+  311 00000030         ;     EXPORT  __user_initial_stackheap
+  312 00000030         ;
+  313 00000030         ;__user_initial_stackheap
+  314 00000030         ;
+  315 00000030         ;     LDR     R0, =  Heap_Mem
+  316 00000030         ;     LDR     R1, =(Stack_Mem + Stack_Size)
+  317 00000030         ;     LDR     R2, = (Heap_Mem +  Heap_Size)
+  318 00000030         ;     LDR     R3, = Stack_Mem
+  319 00000030         ;     BX      LR
+  320 00000030         ;
+  321 00000030         ;     ALIGN
+  322 00000030         ;
+  323 00000030         ;                ENDIF
+  324 00000030         ;
+  325 00000030                 END
               4002101C 
               10000000 
               40022000 
               00000001 
               40021000 
               00010000 
+              00020000 
 Command Line: --16 --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=i
 nterwork --depend=.\objects\main.d -o.\objects\main.o -I.\RTE\_Template -IC:\Ke
 il_v5\ARM\PACK\Keil\STM32F0xx_DFP\2.0.0\Drivers\CMSIS\Device\ST\STM32F0xx\Inclu
@@ -3340,56 +3350,56 @@ Symbol: .text
    Uses
       None
 Comment: .text unused
-ADC1_COMP_IRQHandler 00000024
+ADC1_COMP_IRQHandler 0000002C
 
 Symbol: ADC1_COMP_IRQHandler
    Definitions
-      At line 264 in file User\main.asm
+      At line 273 in file User\main.asm
    Uses
       At line 100 in file User\main.asm
-      At line 234 in file User\main.asm
+      At line 243 in file User\main.asm
 
-CEC_IRQHandler 00000024
+CEC_IRQHandler 0000002C
 
 Symbol: CEC_IRQHandler
    Definitions
-      At line 280 in file User\main.asm
+      At line 289 in file User\main.asm
    Uses
       At line 118 in file User\main.asm
-      At line 250 in file User\main.asm
+      At line 259 in file User\main.asm
 
-DMA1_Channel1_IRQHandler 00000024
+DMA1_Channel1_IRQHandler 0000002C
 
 Symbol: DMA1_Channel1_IRQHandler
    Definitions
-      At line 261 in file User\main.asm
+      At line 270 in file User\main.asm
    Uses
       At line 97 in file User\main.asm
-      At line 231 in file User\main.asm
+      At line 240 in file User\main.asm
 
-DMA1_Channel2_3_IRQHandler 00000024
+DMA1_Channel2_3_IRQHandler 0000002C
 
 Symbol: DMA1_Channel2_3_IRQHandler
    Definitions
-      At line 262 in file User\main.asm
+      At line 271 in file User\main.asm
    Uses
       At line 98 in file User\main.asm
-      At line 232 in file User\main.asm
+      At line 241 in file User\main.asm
 
-DMA1_Channel4_5_IRQHandler 00000024
+DMA1_Channel4_5_IRQHandler 0000002C
 
 Symbol: DMA1_Channel4_5_IRQHandler
    Definitions
-      At line 263 in file User\main.asm
+      At line 272 in file User\main.asm
    Uses
       At line 99 in file User\main.asm
-      At line 233 in file User\main.asm
+      At line 242 in file User\main.asm
 
-Default_Handler 00000024
+Default_Handler 0000002C
 
 Symbol: Default_Handler
    Definitions
-      At line 220 in file User\main.asm
+      At line 229 in file User\main.asm
    Uses
 
 
@@ -3399,61 +3409,61 @@ Relocatable symbols
 
       None
 Comment: Default_Handler unused
-EXTI0_1_IRQHandler 00000024
+EXTI0_1_IRQHandler 0000002C
 
 Symbol: EXTI0_1_IRQHandler
    Definitions
-      At line 257 in file User\main.asm
+      At line 266 in file User\main.asm
    Uses
       At line 93 in file User\main.asm
-      At line 227 in file User\main.asm
+      At line 236 in file User\main.asm
 
-EXTI2_3_IRQHandler 00000024
+EXTI2_3_IRQHandler 0000002C
 
 Symbol: EXTI2_3_IRQHandler
    Definitions
-      At line 258 in file User\main.asm
+      At line 267 in file User\main.asm
    Uses
       At line 94 in file User\main.asm
-      At line 228 in file User\main.asm
+      At line 237 in file User\main.asm
 
-EXTI4_15_IRQHandler 00000024
+EXTI4_15_IRQHandler 0000002C
 
 Symbol: EXTI4_15_IRQHandler
    Definitions
-      At line 259 in file User\main.asm
+      At line 268 in file User\main.asm
    Uses
       At line 95 in file User\main.asm
-      At line 229 in file User\main.asm
+      At line 238 in file User\main.asm
 
-FLASH_IRQHandler 00000024
+FLASH_IRQHandler 0000002C
 
 Symbol: FLASH_IRQHandler
    Definitions
-      At line 255 in file User\main.asm
+      At line 264 in file User\main.asm
    Uses
       At line 91 in file User\main.asm
-      At line 225 in file User\main.asm
+      At line 234 in file User\main.asm
 
-HardFault_Handler 0000001C
+HardFault_Handler 00000024
 
 Symbol: HardFault_Handler
    Definitions
-      At line 196 in file User\main.asm
+      At line 205 in file User\main.asm
    Uses
       At line 73 in file User\main.asm
-      At line 197 in file User\main.asm
+      At line 206 in file User\main.asm
 
-I2C1_IRQHandler 00000024
+I2C1_IRQHandler 0000002C
 
 Symbol: I2C1_IRQHandler
    Definitions
-      At line 274 in file User\main.asm
+      At line 283 in file User\main.asm
    Uses
       At line 111 in file User\main.asm
-      At line 244 in file User\main.asm
+      At line 253 in file User\main.asm
 
-I2C2_IRQHandler 00000024
+I2C2_IRQHandler 0000002C
 
 Symbol: I2C2_IRQHandler
 
@@ -3463,10 +3473,10 @@ ARM Macro Assembler    Page 3 Alphabetic symbol ordering
 Relocatable symbols
 
    Definitions
-      At line 275 in file User\main.asm
+      At line 284 in file User\main.asm
    Uses
       At line 112 in file User\main.asm
-      At line 245 in file User\main.asm
+      At line 254 in file User\main.asm
 
 Init 00000002
 
@@ -3476,50 +3486,50 @@ Symbol: Init
    Uses
       At line 144 in file User\main.asm
 Comment: Init used once
-NMI_Handler 0000001A
+NMI_Handler 00000022
 
 Symbol: NMI_Handler
    Definitions
-      At line 189 in file User\main.asm
+      At line 198 in file User\main.asm
    Uses
       At line 72 in file User\main.asm
-      At line 190 in file User\main.asm
+      At line 199 in file User\main.asm
 
-PVD_IRQHandler 00000024
+PVD_IRQHandler 0000002C
 
 Symbol: PVD_IRQHandler
    Definitions
-      At line 253 in file User\main.asm
+      At line 262 in file User\main.asm
    Uses
       At line 89 in file User\main.asm
-      At line 223 in file User\main.asm
+      At line 232 in file User\main.asm
 
-PendSV_Handler 00000020
+PendSV_Handler 00000028
 
 Symbol: PendSV_Handler
    Definitions
-      At line 208 in file User\main.asm
+      At line 217 in file User\main.asm
    Uses
       At line 84 in file User\main.asm
-      At line 209 in file User\main.asm
+      At line 218 in file User\main.asm
 
-RCC_IRQHandler 00000024
+RCC_IRQHandler 0000002C
 
 Symbol: RCC_IRQHandler
    Definitions
-      At line 256 in file User\main.asm
+      At line 265 in file User\main.asm
    Uses
       At line 92 in file User\main.asm
-      At line 226 in file User\main.asm
+      At line 235 in file User\main.asm
 
-RTC_IRQHandler 00000024
+RTC_IRQHandler 0000002C
 
 Symbol: RTC_IRQHandler
    Definitions
-      At line 254 in file User\main.asm
+      At line 263 in file User\main.asm
    Uses
       At line 90 in file User\main.asm
-      At line 224 in file User\main.asm
+      At line 233 in file User\main.asm
 
 
 
@@ -3536,56 +3546,56 @@ Symbol: Reset_Handler
       At line 71 in file User\main.asm
       At line 140 in file User\main.asm
 
-SPI1_IRQHandler 00000024
+SPI1_IRQHandler 0000002C
 
 Symbol: SPI1_IRQHandler
    Definitions
-      At line 276 in file User\main.asm
+      At line 285 in file User\main.asm
    Uses
       At line 113 in file User\main.asm
-      At line 246 in file User\main.asm
+      At line 255 in file User\main.asm
 
-SPI2_IRQHandler 00000024
+SPI2_IRQHandler 0000002C
 
 Symbol: SPI2_IRQHandler
    Definitions
-      At line 277 in file User\main.asm
+      At line 286 in file User\main.asm
    Uses
       At line 114 in file User\main.asm
-      At line 247 in file User\main.asm
+      At line 256 in file User\main.asm
 
-SVC_Handler 0000001E
+SVC_Handler 00000026
 
 Symbol: SVC_Handler
    Definitions
-      At line 202 in file User\main.asm
+      At line 211 in file User\main.asm
    Uses
       At line 81 in file User\main.asm
-      At line 203 in file User\main.asm
+      At line 212 in file User\main.asm
 
-SysTick_Handler 00000022
+SysTick_Handler 0000002A
 
 Symbol: SysTick_Handler
    Definitions
-      At line 214 in file User\main.asm
+      At line 223 in file User\main.asm
    Uses
       At line 85 in file User\main.asm
-      At line 215 in file User\main.asm
+      At line 224 in file User\main.asm
 
-TIM14_IRQHandler 00000024
+TIM14_IRQHandler 0000002C
 
 Symbol: TIM14_IRQHandler
    Definitions
-      At line 270 in file User\main.asm
+      At line 279 in file User\main.asm
    Uses
       At line 107 in file User\main.asm
-      At line 240 in file User\main.asm
+      At line 249 in file User\main.asm
 
-TIM15_IRQHandler 00000024
+TIM15_IRQHandler 0000002C
 
 Symbol: TIM15_IRQHandler
    Definitions
-      At line 271 in file User\main.asm
+      At line 280 in file User\main.asm
 
 
 
@@ -3594,63 +3604,63 @@ Relocatable symbols
 
    Uses
       At line 108 in file User\main.asm
-      At line 241 in file User\main.asm
+      At line 250 in file User\main.asm
 
-TIM16_IRQHandler 00000024
+TIM16_IRQHandler 0000002C
 
 Symbol: TIM16_IRQHandler
    Definitions
-      At line 272 in file User\main.asm
+      At line 281 in file User\main.asm
    Uses
       At line 109 in file User\main.asm
-      At line 242 in file User\main.asm
+      At line 251 in file User\main.asm
 
-TIM17_IRQHandler 00000024
+TIM17_IRQHandler 0000002C
 
 Symbol: TIM17_IRQHandler
    Definitions
-      At line 273 in file User\main.asm
+      At line 282 in file User\main.asm
    Uses
       At line 110 in file User\main.asm
-      At line 243 in file User\main.asm
+      At line 252 in file User\main.asm
 
-TIM1_BRK_UP_TRG_COM_IRQHandler 00000024
+TIM1_BRK_UP_TRG_COM_IRQHandler 0000002C
 
 Symbol: TIM1_BRK_UP_TRG_COM_IRQHandler
    Definitions
-      At line 265 in file User\main.asm
+      At line 274 in file User\main.asm
    Uses
       At line 101 in file User\main.asm
-      At line 235 in file User\main.asm
+      At line 244 in file User\main.asm
 
-TIM1_CC_IRQHandler 00000024
+TIM1_CC_IRQHandler 0000002C
 
 Symbol: TIM1_CC_IRQHandler
    Definitions
-      At line 266 in file User\main.asm
+      At line 275 in file User\main.asm
    Uses
       At line 102 in file User\main.asm
-      At line 236 in file User\main.asm
+      At line 245 in file User\main.asm
 
-TIM2_IRQHandler 00000024
+TIM2_IRQHandler 0000002C
 
 Symbol: TIM2_IRQHandler
    Definitions
-      At line 267 in file User\main.asm
+      At line 276 in file User\main.asm
    Uses
       At line 103 in file User\main.asm
-      At line 237 in file User\main.asm
+      At line 246 in file User\main.asm
 
-TIM3_IRQHandler 00000024
+TIM3_IRQHandler 0000002C
 
 Symbol: TIM3_IRQHandler
    Definitions
-      At line 268 in file User\main.asm
+      At line 277 in file User\main.asm
    Uses
       At line 104 in file User\main.asm
-      At line 238 in file User\main.asm
+      At line 247 in file User\main.asm
 
-TIM6_DAC_IRQHandler 00000024
+TIM6_DAC_IRQHandler 0000002C
 
 
 
@@ -3660,48 +3670,56 @@ Relocatable symbols
 
 Symbol: TIM6_DAC_IRQHandler
    Definitions
-      At line 269 in file User\main.asm
+      At line 278 in file User\main.asm
    Uses
       At line 105 in file User\main.asm
-      At line 239 in file User\main.asm
+      At line 248 in file User\main.asm
 
-TSC_IRQHandler 00000024
+TSC_IRQHandler 0000002C
 
 Symbol: TSC_IRQHandler
    Definitions
-      At line 260 in file User\main.asm
+      At line 269 in file User\main.asm
    Uses
       At line 96 in file User\main.asm
-      At line 230 in file User\main.asm
+      At line 239 in file User\main.asm
 
-USART1_IRQHandler 00000024
+USART1_IRQHandler 0000002C
 
 Symbol: USART1_IRQHandler
    Definitions
-      At line 278 in file User\main.asm
+      At line 287 in file User\main.asm
    Uses
       At line 115 in file User\main.asm
-      At line 248 in file User\main.asm
+      At line 257 in file User\main.asm
 
-USART2_IRQHandler 00000024
+USART2_IRQHandler 0000002C
 
 Symbol: USART2_IRQHandler
    Definitions
-      At line 279 in file User\main.asm
+      At line 288 in file User\main.asm
    Uses
       At line 116 in file User\main.asm
-      At line 249 in file User\main.asm
+      At line 258 in file User\main.asm
 
-WWDG_IRQHandler 00000024
+WWDG_IRQHandler 0000002C
 
 Symbol: WWDG_IRQHandler
    Definitions
-      At line 252 in file User\main.asm
+      At line 261 in file User\main.asm
    Uses
       At line 88 in file User\main.asm
-      At line 222 in file User\main.asm
+      At line 231 in file User\main.asm
 
-38 symbols
+wait_hserdy 00000018
+
+Symbol: wait_hserdy
+   Definitions
+      At line 178 in file User\main.asm
+   Uses
+      At line 182 in file User\main.asm
+Comment: wait_hserdy used once
+39 symbols
 
 
 
@@ -5829,7 +5847,8 @@ Symbol: RCC_CR
       At line 132 in file User\stm32f051r8t6.asm
    Uses
       At line 170 in file User\main.asm
-Comment: RCC_CR used once
+      At line 177 in file User\main.asm
+
 RCC_CR2 40021034
 
 Symbol: RCC_CR2
@@ -5846,13 +5865,13 @@ Symbol: RCC_CSR
    Uses
       None
 Comment: RCC_CSR unused
-RTC_ALRMAR 4000281C
 
 
 
 ARM Macro Assembler    Page 34 Alphabetic symbol ordering
 Absolute symbols
 
+RTC_ALRMAR 4000281C
 
 Symbol: RTC_ALRMAR
    Definitions
@@ -5911,13 +5930,13 @@ Comment: RTC_BKP0R unused
 RTC_BKP1R 40002854
 
 Symbol: RTC_BKP1R
-   Definitions
 
 
 
 ARM Macro Assembler    Page 35 Alphabetic symbol ordering
 Absolute symbols
 
+   Definitions
       At line 534 in file User\stm32f051r8t6.asm
    Uses
       None
@@ -5976,13 +5995,13 @@ Symbol: RTC_ISR
    Definitions
       At line 516 in file User\stm32f051r8t6.asm
    Uses
-      None
 
 
 
 ARM Macro Assembler    Page 36 Alphabetic symbol ordering
 Absolute symbols
 
+      None
 Comment: RTC_ISR unused
 RTC_PRER 40002810
 
@@ -6044,9 +6063,9 @@ RTC_SSR 40002828
 
 
 
-
 ARM Macro Assembler    Page 37 Alphabetic symbol ordering
 Absolute symbols
+
 
 Symbol: RTC_SSR
    Definitions
@@ -6106,13 +6125,13 @@ SPI1_BASE 40013000
 
 Symbol: SPI1_BASE
    Definitions
-      At line 36 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 38 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 36 in file User\stm32f051r8t6.asm
    Uses
       At line 183 in file User\stm32f051r8t6.asm
       At line 184 in file User\stm32f051r8t6.asm
@@ -6171,13 +6190,13 @@ Symbol: SPI1_I2SPR
       At line 191 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: SPI1_I2SPR unused
 
 
 
 ARM Macro Assembler    Page 39 Alphabetic symbol ordering
 Absolute symbols
 
+Comment: SPI1_I2SPR unused
 SPI1_RXCRCR 40013014
 
 Symbol: SPI1_RXCRCR
@@ -6236,13 +6255,13 @@ Symbol: SPI2_CR2
 Comment: SPI2_CR2 unused
 SPI2_CRCPR 40003810
 
-Symbol: SPI2_CRCPR
 
 
 
 ARM Macro Assembler    Page 40 Alphabetic symbol ordering
 Absolute symbols
 
+Symbol: SPI2_CRCPR
    Definitions
       At line 201 in file User\stm32f051r8t6.asm
    Uses
@@ -6301,13 +6320,13 @@ SYSCFG_BASE 40010000
 Symbol: SYSCFG_BASE
    Definitions
       At line 32 in file User\stm32f051r8t6.asm
-   Uses
 
 
 
 ARM Macro Assembler    Page 41 Alphabetic symbol ordering
 Absolute symbols
 
+   Uses
       At line 568 in file User\stm32f051r8t6.asm
       At line 569 in file User\stm32f051r8t6.asm
       At line 570 in file User\stm32f051r8t6.asm
@@ -6366,13 +6385,13 @@ Symbol: SYSCFG_EXTICR_4
 Comment: SYSCFG_EXTICR_4 unused
 SYSCFG_RESERVED 40010004
 
-Symbol: SYSCFG_RESERVED
 
 
 
 ARM Macro Assembler    Page 42 Alphabetic symbol ordering
 Absolute symbols
 
+Symbol: SYSCFG_RESERVED
    Definitions
       At line 569 in file User\stm32f051r8t6.asm
    Uses
@@ -6434,9 +6453,9 @@ TIM14_CCER 40002020
 
 
 
-
 ARM Macro Assembler    Page 43 Alphabetic symbol ordering
 Absolute symbols
+
 
 Symbol: TIM14_CCER
    Definitions
@@ -6496,13 +6515,13 @@ TIM14_CNT 40002024
 
 Symbol: TIM14_CNT
    Definitions
-      At line 416 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 44 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 416 in file User\stm32f051r8t6.asm
    Uses
       None
 Comment: TIM14_CNT unused
@@ -6561,13 +6580,13 @@ Symbol: TIM14_OR
       At line 427 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: TIM14_OR unused
 
 
 
 ARM Macro Assembler    Page 45 Alphabetic symbol ordering
 Absolute symbols
 
+Comment: TIM14_OR unused
 TIM14_PSC 40002028
 
 Symbol: TIM14_PSC
@@ -6626,13 +6645,13 @@ Symbol: TIM15_BASE
       At line 442 in file User\stm32f051r8t6.asm
       At line 443 in file User\stm32f051r8t6.asm
       At line 444 in file User\stm32f051r8t6.asm
-      At line 445 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 46 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 445 in file User\stm32f051r8t6.asm
       At line 446 in file User\stm32f051r8t6.asm
       At line 447 in file User\stm32f051r8t6.asm
       At line 448 in file User\stm32f051r8t6.asm
@@ -6694,9 +6713,9 @@ TIM15_CCR3 4001403C
 
 
 
-
 ARM Macro Assembler    Page 47 Alphabetic symbol ordering
 Absolute symbols
+
 
 Symbol: TIM15_CCR3
    Definitions
@@ -6756,13 +6775,13 @@ TIM15_DMAR 4001404C
 
 Symbol: TIM15_DMAR
    Definitions
-      At line 452 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 48 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 452 in file User\stm32f051r8t6.asm
    Uses
       None
 Comment: TIM15_DMAR unused
@@ -6821,13 +6840,13 @@ Symbol: TIM16_ARR
       At line 471 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: TIM16_ARR unused
 
 
 
 ARM Macro Assembler    Page 49 Alphabetic symbol ordering
 Absolute symbols
 
+Comment: TIM16_ARR unused
 TIM16_BASE 40014400
 
 Symbol: TIM16_BASE
@@ -6886,13 +6905,13 @@ Symbol: TIM16_CCMR2
    Definitions
       At line 467 in file User\stm32f051r8t6.asm
    Uses
-      None
 
 
 
 ARM Macro Assembler    Page 50 Alphabetic symbol ordering
 Absolute symbols
 
+      None
 Comment: TIM16_CCMR2 unused
 TIM16_CCR1 40014434
 
@@ -6954,9 +6973,9 @@ TIM16_DCR 40014448
 
 
 
-
 ARM Macro Assembler    Page 51 Alphabetic symbol ordering
 Absolute symbols
+
 
 Symbol: TIM16_DCR
    Definitions
@@ -7016,13 +7035,13 @@ TIM16_SMCR 40014408
 
 Symbol: TIM16_SMCR
    Definitions
-      At line 462 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 52 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 462 in file User\stm32f051r8t6.asm
    Uses
       None
 Comment: TIM16_SMCR unused
@@ -7081,13 +7100,13 @@ Comment: TIM17_BDTR unused
 TIM17_CCER 40014820
 
 Symbol: TIM17_CCER
-   Definitions
 
 
 
 ARM Macro Assembler    Page 53 Alphabetic symbol ordering
 Absolute symbols
 
+   Definitions
       At line 495 in file User\stm32f051r8t6.asm
    Uses
       None
@@ -7146,13 +7165,13 @@ Symbol: TIM17_CNT
    Definitions
       At line 496 in file User\stm32f051r8t6.asm
    Uses
-      None
 
 
 
 ARM Macro Assembler    Page 54 Alphabetic symbol ordering
 Absolute symbols
 
+      None
 Comment: TIM17_CNT unused
 TIM17_CR1 40014800
 
@@ -7214,9 +7233,9 @@ TIM17_PSC 40014828
 
 
 
-
 ARM Macro Assembler    Page 55 Alphabetic symbol ordering
 Absolute symbols
+
 
 Symbol: TIM17_PSC
    Definitions
@@ -7276,13 +7295,13 @@ Symbol: TIM1_BASE
       At line 314 in file User\stm32f051r8t6.asm
       At line 315 in file User\stm32f051r8t6.asm
       At line 316 in file User\stm32f051r8t6.asm
-      At line 317 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 56 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 317 in file User\stm32f051r8t6.asm
       At line 318 in file User\stm32f051r8t6.asm
       At line 319 in file User\stm32f051r8t6.asm
       At line 320 in file User\stm32f051r8t6.asm
@@ -7341,13 +7360,13 @@ Comment: TIM1_CCR2 unused
 TIM1_CCR3 40012C3C
 
 Symbol: TIM1_CCR3
-   Definitions
 
 
 
 ARM Macro Assembler    Page 57 Alphabetic symbol ordering
 Absolute symbols
 
+   Definitions
       At line 318 in file User\stm32f051r8t6.asm
    Uses
       None
@@ -7406,13 +7425,13 @@ Symbol: TIM1_DMAR
    Definitions
       At line 322 in file User\stm32f051r8t6.asm
    Uses
-      None
 
 
 
 ARM Macro Assembler    Page 58 Alphabetic symbol ordering
 Absolute symbols
 
+      None
 Comment: TIM1_DMAR unused
 TIM1_EGR 40012C14
 
@@ -7474,9 +7493,9 @@ TIM2_BASE 40000000
 
 
 
-
 ARM Macro Assembler    Page 59 Alphabetic symbol ordering
 Absolute symbols
+
 
 Symbol: TIM2_BASE
    Definitions
@@ -7536,13 +7555,13 @@ Symbol: TIM2_CCMR2
    Uses
       None
 Comment: TIM2_CCMR2 unused
-TIM2_CCR1 40000034
 
 
 
 ARM Macro Assembler    Page 60 Alphabetic symbol ordering
 Absolute symbols
 
+TIM2_CCR1 40000034
 
 Symbol: TIM2_CCR1
    Definitions
@@ -7601,13 +7620,13 @@ Comment: TIM2_CR2 unused
 TIM2_DCR 40000048
 
 Symbol: TIM2_DCR
-   Definitions
 
 
 
 ARM Macro Assembler    Page 61 Alphabetic symbol ordering
 Absolute symbols
 
+   Definitions
       At line 347 in file User\stm32f051r8t6.asm
    Uses
       None
@@ -7666,13 +7685,13 @@ Symbol: TIM2_SMCR
    Definitions
       At line 331 in file User\stm32f051r8t6.asm
    Uses
-      None
 
 
 
 ARM Macro Assembler    Page 62 Alphabetic symbol ordering
 Absolute symbols
 
+      None
 Comment: TIM2_SMCR unused
 TIM2_SR 40000010
 
@@ -7731,13 +7750,13 @@ TIM3_CCER 40000420
 Symbol: TIM3_CCER
    Definitions
       At line 363 in file User\stm32f051r8t6.asm
-   Uses
 
 
 
 ARM Macro Assembler    Page 63 Alphabetic symbol ordering
 Absolute symbols
 
+   Uses
       None
 Comment: TIM3_CCER unused
 TIM3_CCMR1 40000418
@@ -7796,13 +7815,13 @@ Symbol: TIM3_CNT
    Uses
       None
 Comment: TIM3_CNT unused
-TIM3_CR1 40000400
 
 
 
 ARM Macro Assembler    Page 64 Alphabetic symbol ordering
 Absolute symbols
 
+TIM3_CR1 40000400
 
 Symbol: TIM3_CR1
    Definitions
@@ -7861,13 +7880,13 @@ Comment: TIM3_OR unused
 TIM3_PSC 40000428
 
 Symbol: TIM3_PSC
-   Definitions
 
 
 
 ARM Macro Assembler    Page 65 Alphabetic symbol ordering
 Absolute symbols
 
+   Definitions
       At line 365 in file User\stm32f051r8t6.asm
    Uses
       None
@@ -7926,13 +7945,13 @@ Symbol: TIM6_BASE
       At line 394 in file User\stm32f051r8t6.asm
       At line 395 in file User\stm32f051r8t6.asm
       At line 396 in file User\stm32f051r8t6.asm
-      At line 397 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 66 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 397 in file User\stm32f051r8t6.asm
       At line 398 in file User\stm32f051r8t6.asm
       At line 399 in file User\stm32f051r8t6.asm
       At line 400 in file User\stm32f051r8t6.asm
@@ -7991,13 +8010,13 @@ TIM6_CCR3 4000103C
 Symbol: TIM6_CCR3
    Definitions
       At line 396 in file User\stm32f051r8t6.asm
-   Uses
 
 
 
 ARM Macro Assembler    Page 67 Alphabetic symbol ordering
 Absolute symbols
 
+   Uses
       None
 Comment: TIM6_CCR3 unused
 TIM6_CCR4 40001040
@@ -8056,13 +8075,13 @@ Symbol: TIM6_DMAR
    Uses
       None
 Comment: TIM6_DMAR unused
-TIM6_EGR 40001014
 
 
 
 ARM Macro Assembler    Page 68 Alphabetic symbol ordering
 Absolute symbols
 
+TIM6_EGR 40001014
 
 Symbol: TIM6_EGR
    Definitions
@@ -8121,13 +8140,13 @@ Symbol: TSC_BASE
       At line 665 in file User\stm32f051r8t6.asm
       At line 666 in file User\stm32f051r8t6.asm
       At line 667 in file User\stm32f051r8t6.asm
-      At line 668 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 69 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 668 in file User\stm32f051r8t6.asm
       At line 669 in file User\stm32f051r8t6.asm
       At line 670 in file User\stm32f051r8t6.asm
       At line 671 in file User\stm32f051r8t6.asm
@@ -8186,13 +8205,13 @@ Symbol: TSC_IOCCR
 Comment: TSC_IOCCR unused
 TSC_IOGCSR 40024030
 
-Symbol: TSC_IOGCSR
 
 
 
 ARM Macro Assembler    Page 70 Alphabetic symbol ordering
 Absolute symbols
 
+Symbol: TSC_IOGCSR
    Definitions
       At line 675 in file User\stm32f051r8t6.asm
    Uses
@@ -8251,13 +8270,13 @@ TSC_IOGXCR_7 4002404C
 Symbol: TSC_IOGXCR_7
    Definitions
       At line 682 in file User\stm32f051r8t6.asm
-   Uses
 
 
 
 ARM Macro Assembler    Page 71 Alphabetic symbol ordering
 Absolute symbols
 
+   Uses
       None
 Comment: TSC_IOGXCR_7 unused
 TSC_IOGXCR_8 40024050
@@ -8316,13 +8335,13 @@ Symbol: TSC_RESERVED3
    Uses
       None
 Comment: TSC_RESERVED3 unused
-TSC_RESERVED4 4002402C
 
 
 
 ARM Macro Assembler    Page 72 Alphabetic symbol ordering
 Absolute symbols
 
+TSC_RESERVED4 4002402C
 
 Symbol: TSC_RESERVED4
    Definitions
@@ -8381,13 +8400,13 @@ Symbol: USART1_CR2
       At line 690 in file User\stm32f051r8t6.asm
    Uses
       None
-Comment: USART1_CR2 unused
 
 
 
 ARM Macro Assembler    Page 73 Alphabetic symbol ordering
 Absolute symbols
 
+Comment: USART1_CR2 unused
 USART1_CR3 40013808
 
 Symbol: USART1_CR3
@@ -8446,13 +8465,13 @@ Symbol: USART1_RESERVED2
 Comment: USART1_RESERVED2 unused
 USART1_RQR 40013818
 
-Symbol: USART1_RQR
 
 
 
 ARM Macro Assembler    Page 74 Alphabetic symbol ordering
 Absolute symbols
 
+Symbol: USART1_RQR
    Definitions
       At line 695 in file User\stm32f051r8t6.asm
    Uses
@@ -8514,9 +8533,9 @@ USART2_CR2 40004404
 
 
 
-
 ARM Macro Assembler    Page 75 Alphabetic symbol ordering
 Absolute symbols
+
 
 Symbol: USART2_CR2
    Definitions
@@ -8576,13 +8595,13 @@ USART2_RESERVED2 4000442A
 
 Symbol: USART2_RESERVED2
    Definitions
-      At line 719 in file User\stm32f051r8t6.asm
 
 
 
 ARM Macro Assembler    Page 76 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 719 in file User\stm32f051r8t6.asm
    Uses
       None
 Comment: USART2_RESERVED2 unused
@@ -8641,13 +8660,13 @@ WWDG_SR 40002C08
 Symbol: WWDG_SR
    Definitions
       At line 600 in file User\stm32f051r8t6.asm
-   Uses
 
 
 
 ARM Macro Assembler    Page 77 Alphabetic symbol ordering
 Absolute symbols
 
+   Uses
       None
 Comment: WWDG_SR unused
 __Vectors_Size 000000BC
@@ -8659,4 +8678,4 @@ Symbol: __Vectors_Size
       At line 64 in file User\main.asm
 Comment: __Vectors_Size used once
 505 symbols
-887 symbols in table
+888 symbols in table

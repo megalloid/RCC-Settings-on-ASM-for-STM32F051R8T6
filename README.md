@@ -8,4 +8,4 @@ Main: User/main.asm
 
 Peripherial defines: User/stm32f051r8t6.asm
 
-#Assembler #STM32 #keil
+Assembler STM32 keil STM32F051R8T6 STM32F0-Discovery

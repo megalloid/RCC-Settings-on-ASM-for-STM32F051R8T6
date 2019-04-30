@@ -7,3 +7,5 @@ Project contains simple configuring RCC module on assembly language (ARM ASM) fo
 Main: User/main.asm
 
 Peripherial defines: User/stm32f051r8t6.asm
+
+#Assembler #STM32 #keil
